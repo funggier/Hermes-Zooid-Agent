@@ -1,7 +1,7 @@
 # Development Roadmap
 
-Project PAUSED_BY_USER: ทุกช่วงเป็นแผนสำหรับอนาคต รอผู้ใช้สั่งกลับมาเริ่ม Zooid
-การทำ CogentNexus-OpenClaw ให้เสร็จเป็นลำดับความสำคัญของผู้ใช้ ไม่มี auto-resume trigger
+Project READY_TO_START: งานแรก READY/UNASSIGNED รอผู้ใช้สั่งเริ่ม Zooid
+การทำ CogentNexus-OpenClaw ให้เสร็จเป็นลำดับความสำคัญของผู้ใช้ ไม่มี automatic start trigger
 
 เป้าหมายแรก: Zooid ติดตั้งและทำงานแยกจาก Hermes โดยคง skills ที่เข้ากันได้
 การพัฒนาผ่าน CogentNexus-OpenClaw เป็นวิธีทำงาน ไม่ใช่ dependency runtime ของ Zooid

@@ -1,7 +1,7 @@
 # Prepare Development Workspace
 
 - Task ID: prepare-development-workspace
-- Definition state: DEFERRED_BY_USER; live owner/state ดู [ACTIVE](../coordination/ACTIVE.md)
+- Definition state: READY; execution NOT_STARTED รอคำสั่งเริ่ม; live owner/state ดู [ACTIVE](../coordination/ACTIVE.md)
 - Depends on: ผู้ใช้สั่งกลับมาพัฒนา Zooid และเอกสาร workflow ใน branch ปัจจุบัน
 - Goal: มี checkout/environment แยกที่ตรวจ source และ baseline สำหรับ independence ได้
 - Non-goals: แก้ production, ติดตั้ง Zooid จริง, ปิด updater จริง, ทดสอบ reset/uninstall บนระบบผู้ใช้

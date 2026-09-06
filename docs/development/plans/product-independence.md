@@ -1,7 +1,8 @@
 # Zooid Product Genesis and Independence Plan
 
-**Project paused by user.** Preserve this design for resumption after CogentNexus-OpenClaw;
-no implementation is active. Follow ACTIVE.md before using any execution steps below.
+**Project ready to start on user instruction.** The first task is READY and unassigned;
+execution has not started. The user will finish CogentNexus-OpenClaw first.
+Follow ACTIVE.md before using any execution steps below.
 
 Historical audit snapshot: source 089bb32886c8c18f7fa20182c7bf8826d6935ac5; implementation and coexistence were not qualified at audit time.
 

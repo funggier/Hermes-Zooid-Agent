@@ -1,7 +1,8 @@
 # Local Development with CogentNexus-OpenClaw
 
-**ใช้คู่มือนี้หลังผู้ใช้สั่งกลับมาพัฒนา Zooid เท่านั้น** ขณะ PAUSED_BY_USER ให้หยุดก่อน bootstrap/claim
-ไม่มีการติดตามหรือปลด pause จากความสำเร็จของ repo อื่นโดยอัตโนมัติ
+**งานแรกเปิดเป็น READY แล้ว** ใช้คู่มือนี้เมื่อผู้ใช้สั่งเริ่ม Zooid หลัง CogentNexus-OpenClaw เสร็จ
+ก่อนคำสั่งเริ่มให้รอก่อน bootstrap/claim; ไม่ต้องขอปลด pause ซ้ำ
+ไม่มีการติดตามหรือเริ่มงานจากความสำเร็จของ repo อื่นโดยอัตโนมัติ
 
 ## บทบาทและขอบเขต
 
@@ -121,14 +122,37 @@ checkpoint แต่ละครั้งอัปเดต report, STATUS, ACTI
 
 เก็บข้อความนี้ไว้ส่งหลัง CogentNexus-OpenClaw เสร็จและผู้ใช้พร้อมกลับมาทำ Zooid:
 
-> กลับมาพัฒนา Zooid ต่อได้แล้ว ยกเลิก pause ของโครงการนี้
+> CogentNexus-OpenClaw เสร็จแล้ว เริ่มงาน Zooid ที่เปิด READY ไว้ได้เลย
 > พัฒนา Zooid-Agent ตาม https://github.com/funggier/Zooid-Agent
 > ตรวจ main, PR #1 และ branch agent/zooid-independence จาก GitHub สดก่อน
 > อ่าน AGENTS.md และ docs/development/README.md แล้วอ่าน coordination/ACTIVE.md กับ STATUS.md
 > รับงานตาม task ที่ ACTIVE ชี้ไปและทำต่อเป็นขั้นเล็ก พร้อมบันทึกหลักฐานลง repo
 > ใช้ checkout และ environment แยกจาก Hermes/OpenClaw/CogentNexus ที่ติดตั้งอยู่
 > ไม่หยุดหรือแก้ระบบที่กำลังใช้รับงาน ไม่รัน installer เดิม และไม่ใช้ credentials ของระบบเดิมโดยอัตโนมัติ
-> รายงาน exact HEAD, สิ่งที่เปลี่ยน, ผลทดสอบ, blocker และ next action
+> ทำต่อเนื่องตาม roadmap ช่วง independence ไม่รอคำสั่งต่อทุก task ส่งอัปเดตสั้นระหว่างทำ
+> บันทึก exact HEAD, สิ่งที่เปลี่ยน, ผลทดสอบ, blocker และ next action ใน repo
 > ถ้าเครื่องมือไม่มี ให้บอก capability ที่ขาดตามจริง ห้ามสมมติคำสั่งของ CogentNexus
 
 ข้อความนี้เป็นคำสั่งที่เตรียมไว้ ยังไม่ได้ถูกส่งหรือสร้าง ticket จาก session ที่จัดทำเอกสาร
+
+## Continuous execution after start
+
+คำสั่งเริ่มจากผู้ใช้อนุญาตให้พัฒนาต่อเนื่องในขอบเขต product independence ของ roadmap
+ตั้งแต่ prepare-development-workspace ถึง qualify-coexistence ไม่ใช่ทำ preparation แล้วหยุดรอคำว่า “ต่อ”
+ขั้น design-native-execution และ design-owned-updates ยัง DEFERRED ตามขอบเขตที่ตกลงไว้
+
+- เมื่อ task ผ่าน ให้บันทึก report/STATUS/WORKLOG, เตรียม task ถัดไปตาม template,
+  เปลี่ยน ACTIVE และรับงานถัดไปได้ทันทีโดยไม่ขออนุมัติ routine source/test/docs/CI repair ซ้ำ
+- หากต้องแบ่งงานเพิ่ม ให้ทำเองตาม root cause/dependency พร้อมเหตุผล ไม่เปลี่ยนเป้าหมายหรือเพิ่ม feature นอก scope
+- ทำ commit/checkpoint เป็นระยะและ push แบบ fast-forward; อัปเดต draft PR ที่เกี่ยวข้อง
+- รายละเอียดหลักฐานอยู่ใน repo; ในบทสนทนาส่งอัปเดตสั้นเมื่อมีผลสำคัญ เปลี่ยนขั้น หรือพบ blocker
+  ระหว่างทำงานต่อเนื่องควรอัปเดตอย่างน้อยทุกประมาณ 3 นาทีเมื่อช่องทางรองรับ
+- ไม่ส่ง final handoff และรอผู้ใช้ตอบหลังจบทุก task; ทำต่อจน independence gates ครบ
+  หรือมี blocker ที่ทำให้ดำเนินต่ออย่างถูกต้องไม่ได้
+- Blocker เฉพาะส่วน: บันทึกหลักฐานแล้วทำงานอิสระที่ยังอยู่ใน scope ต่อได้
+  หากต้องการข้อมูล/สิทธิ์/การตัดสินใจจากผู้ใช้จริง ให้ถามเฉพาะจุดนั้นพร้อมผลที่เตรียมแล้ว
+- ไม่อ้างว่าส่งข้อความในอนาคตหรือทำงานเบื้องหลังต่อได้หาก runtime/session ไม่มีความสามารถนั้น
+  ถ้าถูกจำกัดเวลา/context/เครื่องมือ ให้บันทึก checkpoint ที่ resume ได้และแจ้งเหตุผลจริง
+- เกณฑ์และข้อจำกัดเรื่อง live runtime, shared providers, external messages และข้อมูลผู้ใช้ยังมีผล
+  เตรียม candidate และทดสอบในพื้นที่แยกก่อนการกระทำที่ต้องใช้สิทธิ์เพิ่มเติม
+- เมื่อครบขอบเขต ให้สรุปผลสุดท้ายครั้งเดียวพร้อม exact candidate, gates และสิ่งที่ยัง deferred

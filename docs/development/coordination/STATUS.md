@@ -1,10 +1,10 @@
 # Development Status
 
-**Project: PAUSED_BY_USER — ทำ CogentNexus-OpenClaw ให้เสร็จก่อนกลับมาพัฒนา Zooid**
-ไม่มี active implementation task; งานด้านล่างเป็น backlog สำหรับกลับมาตามคำสั่งผู้ใช้
+**Project: READY_TO_START — งานเปิดไว้แล้ว รอคำสั่งเริ่มหลัง CogentNexus-OpenClaw เสร็จ**
+งานแรก READY/UNASSIGNED; execution NOT_STARTED ไม่ใช่ผลสำรวจว่าเครื่องพร้อม
 
 Snapshot basis: main 089bb32886c8c18f7fa20182c7bf8826d6935ac5;
-working branch aeb72731591561586a97c4226b84fe6e1112ae19 ก่อน commit เอกสารชุดนี้
+working branch 1bb57bb290f94b6e9fb43844fa501db58ceb502e ก่อน commit เปิดงานเป็น READY
 ตรวจ GitHub สดเมื่อรับงาน; SHA นี้ไม่ใช่คำสั่งให้ reset branch
 
 | งาน | สถานะ | หลักฐาน / เงื่อนไข |
@@ -12,7 +12,7 @@ working branch aeb72731591561586a97c4226b84fe6e1112ae19 ก่อน commit เ�
 | Fork และบันทึก genesis | DONE | [source baseline](https://github.com/funggier/Zooid-Agent/commit/089bb32886c8c18f7fa20182c7bf8826d6935ac5), parent NousResearch/hermes-agent |
 | Initial targeted source audit | DONE | [audit commit](https://github.com/funggier/Zooid-Agent/commit/aeb72731591561586a97c4226b84fe6e1112ae19), [แผน](../plans/product-independence.md); ไม่ใช่ full repository audit |
 | โครงสร้างเอกสารและ workflow | DOCUMENTED | [README](../README.md), ตรวจผลเผยแพร่จาก PR #1; ไม่ได้ติดตั้ง workflow ใน runtime |
-| prepare-development-workspace | DEFERRED | [task](../tasks/prepare-development-workspace.md), ยังไม่มี executor claim |
+| prepare-development-workspace | READY | [task](../tasks/prepare-development-workspace.md), ยังไม่มี executor claim |
 | disable-upstream-updates | PLANNED | ยังไม่มี production changes |
 | isolate-runtime-storage | PLANNED | ยังไม่มี production changes |
 | separate-package-entrypoints | PLANNED | ยังไม่มี production changes |
@@ -31,9 +31,12 @@ workspace ของ ChatGPT ในการสำรวจครั้งก่�
 
 ## ความหมายสถานะ
 
-PAUSED_BY_USER = หยุดโครงการตามคำสั่งผู้ใช้ ไม่มี auto-resume;
+READY_TO_START = โครงการเตรียมงานพร้อม แต่ยังรอคำสั่งเริ่มจากผู้ใช้;
 PLANNED = มีลำดับงานแต่ยังไม่พร้อมดำเนิน; READY = task พร้อมแต่ยังไม่มีเจ้าของ;
 IN_PROGRESS = claim ปัจจุบันถูกเผยแพร่แล้ว; BLOCKED = มี blocker พร้อมหลักฐาน;
 DONE = acceptance ของ task ครบและลิงก์หลักฐานเข้าถึงได้;
 DOCUMENTED = มีแบบออกแบบ ยังไม่อ้างการทำงานจริง; DEFERRED = อยู่นอกช่วงปัจจุบัน
 ผลการทดสอบใช้ PASS / FAIL / BLOCKED / NOT_RUN แยกจากสถานะ task
+
+Execution mode after user start: CONTINUOUS through independence qualification;
+progress updates in chat, durable evidence in repository, no per-task continuation prompt.

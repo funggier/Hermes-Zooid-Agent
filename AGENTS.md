@@ -3,8 +3,13 @@
 This repository is Zooid-Agent, an independent product derived from Hermes.
 For Zooid development, read docs/development/README.md, then
 docs/development/coordination/ACTIVE.md and STATUS.md before choosing work.
-If ACTIVE.md says PAUSED_BY_USER, do not claim or execute Zooid implementation tasks
-unless the user explicitly resumes Zooid. Completion elsewhere is not an auto-resume signal.
+If ACTIVE.md says READY_TO_START with execution NOT_STARTED, the task is prepared but
+waits for the user's start instruction. Once instructed, claim and execute without another
+pause-release step. Completion elsewhere is not an automatic start signal.
+After the user starts, execute the independence roadmap continuously through qualification:
+checkpoint evidence, prepare/claim the next task, and continue without per-task confirmation.
+Use brief progress updates; detailed reports belong in the repository. Respect live-runtime
+boundaries and stop only for completion, user stop, or a genuine blocking condition.
 Follow docs/development/naming-conventions.md for new files and documents.
 Use the task scope and evidence workflow in docs/development/guides/local-development.md.
 
