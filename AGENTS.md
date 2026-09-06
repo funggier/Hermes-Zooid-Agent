@@ -1,3 +1,25 @@
+# Zooid Development Entry Point
+
+This repository is Zooid-Agent, an independent product derived from Hermes.
+For Zooid development, read docs/development/README.md, then
+docs/development/coordination/ACTIVE.md and STATUS.md before choosing work.
+If ACTIVE.md says PAUSED_BY_USER, do not claim or execute Zooid implementation tasks
+unless the user explicitly resumes Zooid. Completion elsewhere is not an auto-resume signal.
+Follow docs/development/naming-conventions.md for new files and documents.
+Use the task scope and evidence workflow in docs/development/guides/local-development.md.
+
+The user has chosen independent installation, lifecycle, data and future releases;
+disable unused upstream update paths first and retain compatible skills.
+Historical Hermes product/upstream references below describe inherited implementation,
+not a requirement to preserve Hermes product identity or synchronize upstream.
+Preserve license/copyright/dependency attribution and applicable area engineering guidance.
+For branch reconciliation, preserve others' changes and use fast-forward pushes; do not
+execute destructive reset examples below on a dirty/shared checkout.
+Develop in a separate checkout/environment; do not modify or stop the live
+CogentNexus-OpenClaw/OpenClaw/Hermes runtime that is executing this work.
+
+---
+
 # Hermes Agent - Development Guide
 
 Instructions for AI coding assistants and developers working on the hermes-agent codebase.

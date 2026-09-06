@@ -1,6 +1,14 @@
 # Zooid Product Genesis and Independence Plan
 
-Status: INITIAL SOURCE AUDIT COMPLETE; IMPLEMENTATION NOT STARTED; COEXISTENCE NOT QUALIFIED.
+**Project paused by user.** Preserve this design for resumption after CogentNexus-OpenClaw;
+no implementation is active. Follow ACTIVE.md before using any execution steps below.
+
+Historical audit snapshot: source 089bb32886c8c18f7fa20182c7bf8826d6935ac5; implementation and coexistence were not qualified at audit time.
+
+Current task/status: [ACTIVE](../coordination/ACTIVE.md) and [STATUS](../coordination/STATUS.md).
+Execution order: [roadmap](../roadmap.md); updater disablement is prioritized before home isolation.
+Local execution: [CogentNexus-OpenClaw guide](../guides/local-development.md).
+This plan records design and initial evidence, not live task ownership.
 
 ## Approved objective
 
