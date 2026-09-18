@@ -2,12 +2,12 @@
 
 - Project state: ACTIVE
 - Active Task: `008-bounded-live-provider-acceptance`
-- Task state: ACTIVE
+- Task state: `SOURCE_READY / LIVE_ACCEPTANCE_BLOCKED_BY_RUNTIME_CREDENTIALS`
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
 - Upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- Last GREEN code SHA: `a103575b01d169cceb9dd853cd6aad73348c8622`
-- Last GREEN Zooid workflow: `35356697706`
+- Current source-ready SHA: `e18e3e9705b3312b97a8f231924e5c8e9af2f94e`
+- Current GREEN Zooid workflow: `35357955959`
 
 ## Active task
 
@@ -15,8 +15,17 @@
 
 ## Immediate next action
 
-Build a reusable bounded acceptance runner with dry-run/configuration tests before any live provider/model call.
+On a real Hermes-configured machine, run Task 008 read-only preflight, then the bounded live acceptance. Do not open Task 009 until real provider evidence is recorded.
+
+## Resume rule
+
+Read `SESSION-HANDOFF.md` first. Next unused task ID remains 009.
 
 ## Boundaries
 
-No force push. Main stays clean. Use disposable Zooid state. Do not claim live provider PASS without real evidence. Next unused task ID: 009.
+- no force push;
+- main stays a clean upstream mirror;
+- disposable Zooid acceptance state only;
+- no live Hermes/OpenClaw lifecycle mutation;
+- no provider PASS claim without real evidence;
+- never record secret values.

@@ -2,14 +2,19 @@
 
 Chronological compact log; numbered tasks hold full details.
 
-## 2026-09-18 — Tasks 001–006
-Repository isolation, durable kernel, Kanban integration, dispatcher lifecycle and isolated dispatcher process reached GREEN.
+## 2026-09-18 — Tasks 001–007
+Repository isolation, durable kernel, real Kanban integration, dispatcher lifecycle/process isolation and real worker spawn envelope reached GREEN.
 
-## 2026-09-18 — Task 007 RED
-Commit `d4e7fc78a13886dffd5748d938365ef02e578b9e`; workflow `35356609760` failed after reaching real `_default_spawn` because `PyYAML` was absent.
+## 2026-09-18 — Task 008 RED
+Commit `d0f29ba40740ed6fca891c12cd67639ccf47e2d8`; workflow `35357193719` FAILURE because the provider-acceptance module did not yet exist.
 
-## 2026-09-18 — Task 007 DONE / GREEN
-Final SHA `a103575b01d169cceb9dd853cd6aad73348c8622`; added only Hermes core `pyyaml==6.0.3`. Workflow `35356697706` SUCCESS. Docker SUCCESS.
+## 2026-09-18 — Task 008 source implementation GREEN
+Commit `7b60bfddfaafd543f2213160f485bf622003a72b`; workflow `35357510149` SUCCESS; Docker `35357510176` SUCCESS.
+Added disposable live-acceptance runner, provider/model/runtime pinning, child dispatch mode and parent-owned SHA gate.
 
-## 2026-09-18 — Task 008 ACTIVE
-Opened bounded live provider acceptance; source preparation comes before any credentialed call.
+## 2026-09-18 — Task 008 preflight RED
+Commit `75da7879219f9ea0203320cbe8cecc4d6cc987b2`; workflow `35357830316` FAILURE only on the newly missing preflight API.
+
+## 2026-09-18 — Task 008 SOURCE_READY
+Commit `e18e3e9705b3312b97a8f231924e5c8e9af2f94e`; Zooid workflow `35357955959` SUCCESS.
+Read-only profile/launcher preflight added. Live provider acceptance remains blocked by lack of access to the user's local credentialed runtime from this execution environment.
