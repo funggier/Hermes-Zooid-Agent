@@ -39,6 +39,10 @@ class HermesKanbanExecutor:
         zooid_home: Path | str | None = None,
         board: str = default_board,
         assignee: str | None = None,
+        model_override: str | None = None,
+        provider_override: str | None = None,
+        max_runtime_seconds: int | None = None,
+        max_retries: int | None = None,
         workspaces_root: Path | str | None = None,
         attachments_root: Path | str | None = None,
     ):
@@ -50,6 +54,18 @@ class HermesKanbanExecutor:
         self.board = str(board).strip() or self.default_board
         self.assignee = str(assignee).strip() if assignee is not None else None
         self.assignee = self.assignee or None
+        self.model_override = str(model_override).strip() if model_override is not None else None
+        self.model_override = self.model_override or None
+        self.provider_override = str(provider_override).strip() if provider_override is not None else None
+        self.provider_override = self.provider_override or None
+        if self.provider_override and not self.model_override:
+            raise ValueError("provider_override requires model_override")
+        self.max_runtime_seconds = int(max_runtime_seconds) if max_runtime_seconds is not None else None
+        self.max_retries = int(max_retries) if max_retries is not None else None
+        if self.max_runtime_seconds is not None and self.max_runtime_seconds <= 0:
+            raise ValueError("max_runtime_seconds must be > 0")
+        if self.max_retries is not None and self.max_retries <= 0:
+            raise ValueError("max_retries must be > 0")
         self.workspaces_root = Path(
             workspaces_root or (self.db_path.parent / "workspaces")
         ).expanduser().resolve()
@@ -203,6 +219,10 @@ criterion cannot be proven, block/request review instead of claiming success.
                 workspace_kind="scratch",
                 project_id="",
                 idempotency_key=operation_key,
+                max_runtime_seconds=self.max_runtime_seconds,
+                max_retries=self.max_retries,
+                model_override=self.model_override,
+                provider_override=self.provider_override,
                 completion_contract="local-only",
             )
             planned_workspace = (self.workspaces_root / task_id).resolve()

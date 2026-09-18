@@ -25,11 +25,13 @@ _ENV_KEYS = (
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m zooid_cnx.dispatcher_child")
-    parser.add_argument("--mode", choices=("probe",), required=True)
+    parser.add_argument("--mode", choices=("probe", "dispatch-task"), required=True)
     parser.add_argument("--db", required=True)
     parser.add_argument("--board", required=True)
     parser.add_argument("--ready-file", required=True)
     parser.add_argument("--interval", type=float, default=0.25)
+    parser.add_argument("--task-id")
+    parser.add_argument("--timeout", type=float, default=300.0)
     return parser
 
 
@@ -90,6 +92,72 @@ def _snapshot(
     }
 
 
+def _dispatch_task(
+    *,
+    db_path: Path,
+    board: str,
+    task_id: str,
+    ready_file: Path,
+    interval: float,
+    timeout: float,
+) -> int:
+    """Run current Hermes dispatcher ticks until one bounded task is terminal."""
+    if not task_id:
+        raise ValueError("dispatch-task mode requires --task-id")
+    if timeout <= 0:
+        raise ValueError("timeout must be > 0")
+
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
+    from hermes_cli import kanban_db_dispatch as kbd
+
+    terminal = {"done", "blocked", "review", "archived"}
+    started_at = time.time()
+    deadline = time.monotonic() + timeout
+    last_spawned = []
+
+    while True:
+        with kbc.connect_closing(db_path) as conn:
+            task = kb.get_task(conn, task_id)
+            if task is None:
+                raise KeyError(f"unknown Kanban task: {task_id}")
+
+            if task.status not in terminal:
+                result = kbd.dispatch_once(
+                    conn,
+                    max_spawn=1,
+                    failure_limit=1,
+                    board=board,
+                )
+                last_spawned = list(result.spawned)
+                task = kb.get_task(conn, task_id)
+                if task is None:
+                    raise KeyError(f"Kanban task disappeared: {task_id}")
+
+            payload = {
+                "pid": os.getpid(),
+                "mode": "dispatch-task",
+                "started_at": started_at,
+                "observed_at": time.time(),
+                "db_path": str(db_path),
+                "board": board,
+                "task_id": task_id,
+                "task_status": task.status,
+                "worker_pid": task.worker_pid,
+                "current_run_id": task.current_run_id,
+                "spawned": last_spawned,
+                "environment": {key: os.environ.get(key, "") for key in _ENV_KEYS},
+            }
+            _atomic_json(ready_file, payload)
+
+            if task.status in terminal:
+                return 0 if task.status == "done" else 2
+
+        if time.monotonic() >= deadline:
+            return 124
+        time.sleep(max(interval, 0.05))
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     db_path = Path(args.db).expanduser().resolve()
@@ -98,6 +166,16 @@ def main(argv: list[str] | None = None) -> int:
     interval = max(float(args.interval), 0.01)
 
     _validate_process_identity(db_path, board)
+
+    if args.mode == "dispatch-task":
+        return _dispatch_task(
+            db_path=db_path,
+            board=board,
+            task_id=str(args.task_id or "").strip(),
+            ready_file=ready_file,
+            interval=interval,
+            timeout=float(args.timeout),
+        )
 
     executor = HermesKanbanExecutor(
         db_path=db_path,
