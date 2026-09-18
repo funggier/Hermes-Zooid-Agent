@@ -113,3 +113,51 @@ def test_worker_evidence_alone_cannot_finish_without_local_artifact_hash(tmp_pat
         assert store.get_ticket(prepared.ticket_id).state.value == "done"
         evidence = store.list_evidence(prepared.ticket_id)
         assert {item.criterion_index for item in evidence} == {0, 1}
+
+
+def test_preflight_is_read_only_and_reports_explicit_runtime(tmp_path, monkeypatch):
+    from zooid_cnx.provider_acceptance import PreflightStatus
+
+    hermes_home = tmp_path / "hermes-profile"
+    hermes_home.mkdir()
+    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("OPENAI_API_KEY", "must-never-be-returned")
+
+    plan = _plan(tmp_path)
+    runner = LiveProviderAcceptance(plan)
+    result = runner.preflight()
+
+    assert result.status is PreflightStatus.READY
+    assert result.profile_home == hermes_home.resolve()
+    assert result.provider == "openai"
+    assert result.model == "gpt-test"
+    assert result.hermes_argv
+    assert not plan.cnx_db.exists()
+    assert not plan.kanban_db.exists()
+    assert not plan.artifact_path.exists()
+    assert "must-never-be-returned" not in repr(result)
+
+
+def test_preflight_blocks_missing_named_profile_without_writing_state(tmp_path, monkeypatch):
+    from zooid_cnx.provider_acceptance import PreflightStatus
+
+    hermes_home = tmp_path / "hermes-root"
+    hermes_home.mkdir()
+    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+
+    plan = AcceptancePlan.create(
+        home=tmp_path / "acceptance-home",
+        acceptance_id="task008-missing-profile",
+        profile="definitely-missing-profile",
+        provider="openai",
+        model="gpt-test",
+        timeout_seconds=90,
+    )
+    runner = LiveProviderAcceptance(plan)
+    result = runner.preflight()
+
+    assert result.status is PreflightStatus.BLOCKED
+    assert "profile" in result.detail.lower()
+    assert result.profile_home is None
+    assert not plan.cnx_db.exists()
+    assert not plan.kanban_db.exists()
