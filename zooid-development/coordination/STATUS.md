@@ -9,19 +9,21 @@
 | 009 | DONE / GREEN | Distribution/CLI/home isolated |
 | 010 | DONE / GREEN | Windows CLI installer isolated |
 | 011 | DONE / GREEN | Desktop OS/runtime identity isolated |
-| 012 | ACTIVE | Bootstrap setup identity/home/source |
+| 012 | DONE / GREEN | Bootstrap setup identity isolated |
+| 013 | ACTIVE | Gateway service/process ownership |
 
-## Latest evidence
+## Latest GREEN evidence
 
-- GREEN SHA: `494c21064f8545375a4497e363e8dd356d7ed7e8`
-- Desktop Identity `35362206169`: SUCCESS
-- Identity `35362206203`: SUCCESS
-- CogentNexus `35362206252`: SUCCESS
-- Windows Installer `35362206055`: SUCCESS
-- Docker `35362206442`: SUCCESS
+- SHA `427c426fd1e47f0d5568d82f5c809e68b3268db1`
+- Bootstrap Setup `35363272722`: SUCCESS
+- Desktop `35363272731`: SUCCESS
+- Identity `35363272711`: SUCCESS
+- CogentNexus `35363272609`: SUCCESS
+- Windows Installer `35363272816`: SUCCESS
+- Docker `35363272677`: SUCCESS
 
 ## Collision status
 
-Core runtime, installer, and Electron Desktop identity are isolated.
+Install/package/Desktop/setup roots are isolated from Hermes and bare Zooid.
 
-Tauri setup app and later gateway/updater/uninstall lifecycle resources remain unqualified, so real-machine installation stays blocked.
+Gateway host-global identities and process targeting are still inherited and therefore real-machine installation remains blocked.

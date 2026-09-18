@@ -1,30 +1,34 @@
 # Zooid Session Handoff — Current
 
-Updated: 2026-09-18
+Updated: 2026-09-19
 
 Repo: `funggier/Hermes-Zooid-Agent`
 Branch: `agent/zooid-independence`
 Canonical product token: `hermeszooid`
+Bare `zooid` is reserved for the separate Zooid project.
 
 ## Completed
 
-Tasks 009–011 are DONE/GREEN.
-Desktop identity is now `HermesZooid`, app ID `com.funggier.hermeszooid`, protocol `hermeszooid://`, and runtime home is HermesZooid-owned.
+Tasks 009–012 are DONE/GREEN:
+- package/CLI/home;
+- Windows installer;
+- Electron Desktop;
+- Tauri bootstrap setup.
 
 ## Active
 
-Task 012 — Bootstrap Setup Identity Independence.
+Task 013 — Gateway Service and Process Ownership.
 
-Repair the separate Tauri setup app before gateway/updater/uninstall lifecycle qualification.
+Primary safety target: a HermesZooid stop/restart/update-style scan must never select a genuine Hermes gateway process.
 
 ## Resume order
 
-1. AGENTS.md
+1. `zooid-development/AGENTS.md`
 2. this file
-3. ACTIVE.md
-4. Task 012
-5. STATUS.md
+3. `coordination/ACTIVE.md`
+4. `tasks/013-hermeszooid-gateway-service-process-ownership.md`
+5. `coordination/STATUS.md`
 
 ## Safety
 
-No real-machine install yet. Existing Hermes and separate Zooid resources must remain untouched. No force push.
+No real-machine install yet. No force push. Existing Hermes and separate Zooid resources must remain untouched.

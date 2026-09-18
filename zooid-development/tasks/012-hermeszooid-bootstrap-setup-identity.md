@@ -1,61 +1,50 @@
 # Task 012 — HermesZooid Bootstrap Setup Identity Independence
 
 - Task ID: `012-hermeszooid-bootstrap-setup-identity`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 011
-- Starting GREEN SHA: `494c21064f8545375a4497e363e8dd356d7ed7e8`
+- RED commit: `fd8ec87c2bbae9332cf88ff7d32dd9b0ee3b4697`
+- Production repair: `427c426fd1e47f0d5568d82f5c809e68b3268db1`
+- Bootstrap Setup Identity workflow: `35363272722` — SUCCESS
 
-## Why this task exists
+## Purpose
 
-HermesZooid Desktop is now OS-unique, but the separate Tauri bootstrap installer still presents and persists inherited Hermes identity.
+Separate the Tauri bootstrap/setup application from inherited Hermes and bare Zooid machine identity before any real-machine installation.
 
-Current collision surfaces include:
-- Tauri product `Hermes`;
-- identifier `com.nousresearch.hermes.setup`;
-- binary `Hermes-Setup`;
-- Windows manifest identity `NousResearch.Hermes.Setup`;
-- root input `HERMES_HOME`;
-- Windows root `%LOCALAPPDATA%\hermes`;
-- POSIX root `~/.hermes`;
-- staged installer helper `hermes-setup.exe`;
-- dev-source env `HERMES_SETUP_DEV_REPO_ROOT`;
-- raw installer download from `NousResearch/hermes-agent`.
+## Qualified identity
 
-## Canonical setup identity
-
-- product/window/bundle name: `HermesZooid Setup`;
+- setup product/window: `HermesZooid Setup`;
 - Tauri identifier: `com.funggier.hermeszooid.setup`;
 - binary: `HermesZooid-Setup`;
-- Windows assembly identity: `Funggier.HermesZooid.Setup`;
+- Windows assembly: `Funggier.HermesZooid.Setup`;
 - product root input: `HERMESZOOID_HOME`;
-- staged helper: `hermeszooid-setup.exe` (or no extension off Windows);
-- dev source env: `HERMESZOOID_SETUP_DEV_REPO_ROOT`;
+- staged helper: `hermeszooid-setup`;
+- development source env: `HERMESZOOID_SETUP_DEV_REPO_ROOT`;
 - raw installer source: `funggier/Hermes-Zooid-Agent`.
 
-## Ownership invariant
+## TDD evidence
 
-The setup app must not select writable state from `HERMES_HOME`, `ZOOID_HOME`, `%LOCALAPPDATA%\hermes`, `%LOCALAPPDATA%\zooid`, `~/.hermes`, or `~/.zooid`.
+RED `fd8ec87c2bbae9332cf88ff7d32dd9b0ee3b4697` defined the bootstrap machine-identity contract.
 
-## Scope
+Production repair `427c426fd1e47f0d5568d82f5c809e68b3268db1` changed Tauri/Cargo/manifest/home/helper/source identity to HermesZooid ownership.
 
-This task covers setup-app product identity, setup-home selection, helper name, and installer-script source.
+Dedicated workflow `35363272722` passed the full bootstrap identity contract.
 
-The updater command path, gateway scheduled-task/service identity, default ports, and uninstall/reset fences are deliberately deferred to Tasks 013–014 so their runtime behavior can be tested independently.
+Same HEAD regression evidence:
+- Desktop Identity `35363272731` — SUCCESS;
+- CogentNexus `35363272609` — SUCCESS;
+- HermesZooid Identity `35363272711` — SUCCESS;
+- Windows Installer `35363272816` — SUCCESS;
+- Docker `35363272677` — SUCCESS.
 
-## TDD plan
+## Result
 
-RED first. Prove:
-1. Tauri package/bundle/window identifier is HermesZooid-owned;
-2. Cargo package/bin/lib identifiers do not claim Hermes executable names;
-3. Windows application manifest identity is HermesZooid-owned;
-4. setup home resolves only `HERMESZOOID_HOME` or HermesZooid defaults;
-5. staged helper is `hermeszooid-setup`;
-6. setup log-level env is HermesZooid-owned;
-7. dev-source env is HermesZooid-owned;
-8. raw install script comes from `funggier/Hermes-Zooid-Agent`;
-9. no bare Zooid machine root or helper identity is introduced.
+PASS.
 
-## Immediate next action
+Real-machine installation remains blocked because gateway/service/process ownership, listener defaults, updater and destructive lifecycle fences are not yet all qualified.
 
-Add a focused bootstrap-setup RED contract and repair the Tauri/Rust identity/home/source boundary until GREEN.
+## Follow-up
+
+Task 013 qualifies gateway service names, launcher process identity, and stop/restart process-selection fences. Listener/port allocation is deliberately audited separately after process ownership is GREEN.

@@ -1,23 +1,23 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `012-hermeszooid-bootstrap-setup-identity`
+- Active Task: `013-hermeszooid-gateway-service-process-ownership`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
-- Last GREEN SHA: `494c21064f8545375a4497e363e8dd356d7ed7e8`
+- Last GREEN SHA: `427c426fd1e47f0d5568d82f5c809e68b3268db1`
 - Canonical product token: `hermeszooid`
 
 ## Active task
 
-[Task 012 — HermesZooid Bootstrap Setup Identity Independence](../tasks/012-hermeszooid-bootstrap-setup-identity.md)
+[Task 013 — HermesZooid Gateway Service and Process Ownership](../tasks/013-hermeszooid-gateway-service-process-ownership.md)
 
 ## Immediate next action
 
-Write RED contracts for Tauri/Cargo/manifest identity, HermesZooid home resolution, staged setup helper, dev source env and raw installer repository.
+Write RED contracts for host service names and real process-selection fences, then repair gateway lifecycle ownership.
 
 ## Real-machine boundary
 
-Do not install yet. Desktop identity is GREEN, but bootstrap setup, gateway/service/port and lifecycle fences are not all qualified.
+Do not install yet. Package, installer, Desktop and setup identity are GREEN; gateway/process ownership, listeners, updater and destructive lifecycle coexistence remain unqualified.
 
-Next unused task ID: 013.
+Next unused task ID: 014.
