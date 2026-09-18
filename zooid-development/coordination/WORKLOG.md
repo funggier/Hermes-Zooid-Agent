@@ -2,22 +2,14 @@
 
 Chronological compact log; numbered tasks hold full details.
 
-## 2026-09-18 — Tasks 001–004
-Repository isolation, durable kernel, generic bridge and real Kanban executor reached GREEN.
+## 2026-09-18 — Tasks 001–006
+Repository isolation, durable kernel, Kanban integration, dispatcher lifecycle and isolated dispatcher process reached GREEN.
 
-## 2026-09-18 — Task 005 GREEN
-Final SHA `e37b3d1b21e9446683b83f2eae311ff4160c46fb`.
-Workflow `35355516901` SUCCESS.
-Real dispatcher claim/workspace/run/evidence lifecycle proven.
+## 2026-09-18 — Task 007 RED
+Commit `d4e7fc78a13886dffd5748d938365ef02e578b9e`; workflow `35356609760` failed after reaching real `_default_spawn` because `PyYAML` was absent.
 
-## 2026-09-18 — Task 006 RED
-Commit `eb02d3a804048ad8b0640349e81f06995a70c1bb`.
-Missing dispatcher_process module as expected.
+## 2026-09-18 — Task 007 DONE / GREEN
+Final SHA `a103575b01d169cceb9dd853cd6aad73348c8622`; added only Hermes core `pyyaml==6.0.3`. Workflow `35356697706` SUCCESS. Docker SUCCESS.
 
-## 2026-09-18 — Task 006 DONE / GREEN
-Implementation `0db88c097293df5182f084de32971c7abe207414`.
-Workflow `35356146655` SUCCESS.
-Dedicated child process sees the same Zooid board while parent env remains unchanged.
-
-## 2026-09-18 — Task 007 ACTIVE
-Opened real Hermes worker subprocess-envelope qualification with a provider-free fake executable.
+## 2026-09-18 — Task 008 ACTIVE
+Opened bounded live provider acceptance; source preparation comes before any credentialed call.

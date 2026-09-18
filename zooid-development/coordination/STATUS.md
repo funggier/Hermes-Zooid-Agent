@@ -2,8 +2,7 @@
 
 **Project: ACTIVE**
 
-Current task:
-[007 — Hermes Worker Subprocess Envelope](../tasks/007-hermes-worker-subprocess-envelope.md)
+Current task: [008 — Bounded Live Provider Acceptance](../tasks/008-bounded-live-provider-acceptance.md)
 
 | Task | State | Result |
 | --- | --- | --- |
@@ -12,21 +11,16 @@ Current task:
 | 003 | DONE / GREEN | Generic executor bridge |
 | 004 | DONE / GREEN | Real Hermes Kanban executor |
 | 005 | DONE / GREEN | Real dispatcher lifecycle |
-| 006 | DONE / GREEN | Isolated dispatcher child process |
-| 007 | ACTIVE | Real worker spawn envelope |
+| 006 | DONE / GREEN | Isolated dispatcher child |
+| 007 | DONE / GREEN | Real Hermes worker spawn envelope |
+| 008 | ACTIVE | Bounded live provider acceptance |
 
 ## Proven chain
 
-`CogentNexus -> real Kanban card -> real dispatcher lifecycle -> Zooid-owned dispatcher child boundary`
+`CogentNexus -> real Kanban -> real dispatcher -> isolated process boundary -> real Hermes worker spawn envelope`
 
-The worker/model process itself remains the next unqualified boundary.
+Latest evidence: SHA `a103575b01d169cceb9dd853cd6aad73348c8622`, Zooid workflow `35356697706` SUCCESS, Docker SUCCESS.
 
-## Latest evidence
+## Current gap
 
-- SHA: `0db88c097293df5182f084de32971c7abe207414`
-- Zooid workflow: `35356146655` — SUCCESS
-
-## Next
-
-Prove real Hermes worker spawn/env behavior with a fake provider-free executable, then open a
-bounded real model/provider acceptance task.
+A real model/provider has not yet completed a CogentNexus Ticket through this path.

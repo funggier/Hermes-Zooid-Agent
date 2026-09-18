@@ -2,14 +2,15 @@
 
 Task IDs increase monotonically and are never reused or renumbered.
 
-| Task | State | Purpose | Key outcome |
-| --- | --- | --- | --- |
-| 001 | DONE | Upstream sync/planning isolation | Clean upstream boundary |
-| 002 | DONE / GREEN | Durable CogentNexus kernel | Evidence/recovery |
-| 003 | DONE / GREEN | Executor-neutral bridge | Durable external execution |
-| 004 | DONE / GREEN | Hermes Kanban executor | Real Kanban adapter |
-| 005 | DONE / GREEN | Dispatcher lifecycle | Claim/workspace/run path |
-| 006 | DONE / GREEN | Dispatcher process boundary | Parent/child env isolation |
-| [007](007-hermes-worker-subprocess-envelope.md) | ACTIVE | Worker subprocess envelope | In progress |
+| Task | State | Purpose |
+| --- | --- | --- |
+| 001 | DONE | Upstream sync/planning isolation |
+| 002 | DONE / GREEN | Durable CogentNexus kernel |
+| 003 | DONE / GREEN | Executor-neutral bridge |
+| 004 | DONE / GREEN | Hermes Kanban executor |
+| 005 | DONE / GREEN | Dispatcher lifecycle |
+| 006 | DONE / GREEN | Dispatcher process boundary |
+| 007 | DONE / GREEN | Real worker subprocess envelope |
+| [008](008-bounded-live-provider-acceptance.md) | ACTIVE | Bounded live provider acceptance |
 
 New sessions start with `../coordination/SESSION-HANDOFF.md`.

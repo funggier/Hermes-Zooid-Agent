@@ -1,60 +1,44 @@
 # Task 007 — Hermes Worker Subprocess Envelope
 
 - Task ID: `007-hermes-worker-subprocess-envelope`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 006
-- Starting GREEN SHA: `0db88c097293df5182f084de32971c7abe207414`
+- RED commit: `d4e7fc78a13886dffd5748d938365ef02e578b9e`
+- Final tested SHA: `a103575b01d169cceb9dd853cd6aad73348c8622`
+- Zooid workflow: `35356697706` — SUCCESS
+- Docker: SUCCESS
 
-## Why this task exists
+## Purpose
 
-Task 006 proves a dedicated dispatcher process can own the Zooid Kanban environment. The next
-unproven boundary is the worker process created by Hermes dispatcher.
+Qualify Hermes real `_default_spawn` worker boundary without invoking a provider/model.
 
-Before using a real provider/model, Zooid must prove that Hermes' real worker spawn path receives
-the correct task/run/claim/workspace/board identity and cannot escape into the normal Hermes
-Kanban board.
+## RED
 
-## Strategy
+`d4e7fc78a13886dffd5748d938365ef02e578b9e` reached the real spawn path and failed because `PyYAML` was absent from the lightweight Zooid workflow.
+This dependency comes from Hermes core (`agent.secret_scope -> utils`) and is not a provider extra.
 
-Use current Hermes `_default_spawn` and point `HERMES_BIN` to a test executable that does not
-call any provider. The executable only records argv, cwd and selected environment fields.
+## Repair
 
-This preserves the real Hermes spawn/env construction path while removing network, model,
-credential and quota variables from the acceptance result.
+`a103575b01d169cceb9dd853cd6aad73348c8622` added pinned core dependency `pyyaml==6.0.3` to the focused Zooid workflow.
 
-## Contract to prove
+## GREEN evidence
 
-- real Hermes worker spawn path is called;
-- one child process starts;
-- cwd equals the Zooid task workspace;
-- worker receives the Zooid Kanban DB/board/workspaces identity;
-- worker receives task id, run id and claim lock;
-- worker source is tagged `kanban`;
-- parent/dispatcher routing stays Zooid-owned;
-- no provider API is contacted;
-- worker process can exit/cleanup without corrupting task/run state.
+Workflow `35356697706` passed and proves:
+- a real OS child is launched by Hermes `_default_spawn`;
+- cwd is the Zooid task workspace;
+- task id, run id and claim lock are passed;
+- Zooid Kanban DB, board and workspaces are pinned;
+- worker source is `kanban` and profile is explicit;
+- expected Hermes worker argv is built;
+- no provider/model override is injected;
+- fake worker exit does not silently mark the task complete.
 
-## Dependency boundary
+## Result
 
-The lightweight Zooid CI may need small inherited Hermes runtime dependencies required merely to
-import the spawn path. Add only what is demonstrated necessary; do not pull all optional provider
-extras just to make this test run.
+PASS.
 
-## Non-goals
+## Follow-up
 
-- real LLM response;
-- provider routing;
-- user credential migration;
-- final Zooid profile/config identity;
-- multi-worker scheduling.
-
-## Acceptance
-
-Task 007 is DONE when the real Hermes worker spawn envelope is GREEN with a provider-free fake
-worker executable and exact evidence is recorded here.
-
-## Immediate next action
-
-Write the RED worker-envelope contract against `_default_spawn` and identify the minimum
-runtime imports needed by that path.
+Task 008 prepares and attempts one bounded live provider/model acceptance through the same Zooid-owned path.

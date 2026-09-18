@@ -7,38 +7,23 @@ Branch: `agent/zooid-independence`
 Clean upstream: `main`
 Upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
 
-Last GREEN code before this documentation checkpoint:
-`0db88c097293df5182f084de32971c7abe207414`
-
-Zooid workflow:
-`35356146655` — SUCCESS.
+Last GREEN code before this documentation checkpoint: `a103575b01d169cceb9dd853cd6aad73348c8622`
+Zooid workflow `35356697706` — SUCCESS.
 
 ## Resume order
-
 1. AGENTS.md
 2. this file
 3. ACTIVE.md
-4. Task 007
+4. Task 008
 5. STATUS.md
-6. older tasks only when needed
 
 ## Completed chain
-
-001 sync/isolation — GREEN
-002 durable kernel — GREEN
-003 generic execution bridge — GREEN
-004 real Kanban executor — GREEN
-005 dispatcher lifecycle — GREEN
-006 dispatcher process boundary — GREEN
-
-Task 006 proves child routing is fixed at Popen environment creation, parent routing is unchanged,
-worker identity is scrubbed, and restart sees the same durable board.
+001–007 are DONE/GREEN. Task 007 proves the actual Hermes `_default_spawn` worker envelope without a provider call.
 
 ## Active
+Task 008 prepares and attempts a bounded real provider/model acceptance.
 
-Task 007 qualifies Hermes' real worker subprocess envelope with a fake executable, before any
-provider/model request.
+If credentials are unavailable, record `SOURCE_READY / LIVE_ACCEPTANCE_BLOCKED` rather than guessing.
 
 ## Safety
-
-No real provider yet. No live Hermes/OpenClaw mutation. No force push.
+Disposable Zooid acceptance state only. No live Hermes/OpenClaw lifecycle mutation. No force push.
