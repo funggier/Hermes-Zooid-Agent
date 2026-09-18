@@ -3,6 +3,7 @@ reply later via proactive ``message/send``. Multiple apps are scoped by ``corp_i
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 import logging
 import socket as _socket
@@ -40,7 +41,7 @@ from plugins.platforms.wecom.wecom_crypto import WXBizMsgCrypt, WeComCryptoError
 logger = logging.getLogger(__name__)
 
 DEFAULT_HOST = None  # dual-stack bind ("0.0.0.0" broke IPv6-only); pin via extra.host
-DEFAULT_PORT = 8645
+DEFAULT_PORT = listener_port("wecom_callback")
 DEFAULT_PATH = "/wecom/callback"
 _MAX_BODY = 65_536  # pre-auth body cap: callbacks are small encrypted XML envelopes
 ACCESS_TOKEN_TTL_SECONDS = 7200

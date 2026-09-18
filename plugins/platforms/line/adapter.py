@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 import base64
 import contextlib
@@ -59,7 +60,7 @@ LINE_SAFE_BUBBLE_CHARS = 4500  # conservative chunking limit
 LINE_MAX_MESSAGES_PER_CALL = 5
 LINE_REPLY_TOKEN_TTL_SECONDS = 50  # below LINE's ~60s
 WEBHOOK_BODY_MAX_BYTES = 1_048_576  # 1 MiB — webhooks are tiny JSON
-DEFAULT_WEBHOOK_PORT = 8646
+DEFAULT_WEBHOOK_PORT = listener_port("line")
 DEFAULT_WEBHOOK_PATH = "/line/webhook"
 DEFAULT_MEDIA_PATH_PREFIX = "/line/media"
 # ``None`` → asyncio binds BOTH address families (mirrors gateway/platforms/webhook.py).

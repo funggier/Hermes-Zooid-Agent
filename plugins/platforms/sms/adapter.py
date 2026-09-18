@@ -11,6 +11,7 @@ SMS_ALLOWED_USERS (comma-separated E.164), SMS_ALLOW_ALL_USERS, SMS_HOME_CHANNEL
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 import base64
 import hashlib
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 TWILIO_API_BASE = "https://api.twilio.com/2010-04-01/Accounts"
 MAX_SMS_LENGTH = 1600  # ~10 SMS segments
-DEFAULT_WEBHOOK_PORT = 8080
+DEFAULT_WEBHOOK_PORT = listener_port("sms")
 DEFAULT_WEBHOOK_HOST = "127.0.0.1"
 _TWILIO_WEBHOOK_MAX_BODY_BYTES = 65_536  # 64 KiB — Twilio payloads are small
 _EMPTY_TWIML = '<?xml version="1.0" encoding="UTF-8"?><Response></Response>'

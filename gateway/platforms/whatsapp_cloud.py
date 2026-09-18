@@ -9,6 +9,7 @@ _WEBHOOK_PORT (8090), _WEBHOOK_PATH (/whatsapp/webhook), _API_VERSION (v20.0).""
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 import contextlib
 import hashlib
@@ -55,7 +56,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_API_VERSION = "v20.0"
 # ``None`` → aiohttp binds one socket per address family; "0.0.0.0" was unreachable on IPv6-only hosts.
 DEFAULT_WEBHOOK_HOST = None
-DEFAULT_WEBHOOK_PORT = 8090
+DEFAULT_WEBHOOK_PORT = listener_port("whatsapp_cloud")
 DEFAULT_WEBHOOK_PATH = "/whatsapp/webhook"
 GRAPH_API_BASE = "https://graph.facebook.com"
 WEBHOOK_MAX_BODY_BYTES = 3 * 1024 * 1024
