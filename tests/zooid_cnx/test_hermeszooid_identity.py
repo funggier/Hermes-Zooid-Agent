@@ -88,12 +88,20 @@ def test_cogentnexus_and_kanban_defaults_use_hermeszooid_home(tmp_path, monkeypa
     ).resolve()
 
 
-def test_pyproject_exposes_hermeszooid_cli_without_removing_hermes_compatibility():
+def test_pyproject_owns_distribution_and_exports_only_hermeszooid_product_cli():
     data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     scripts = data["project"]["scripts"]
 
+    assert data["project"]["name"] == "hermeszooid"
     assert scripts["hermeszooid"] == "hermeszooid.cli:main"
-    assert scripts["hermes"] == "hermes_cli.main:main"
+    assert "hermes" not in scripts
+    assert "hermes-agent" not in scripts
+    assert "hermes-acp" not in scripts
+    assert "zooid" not in scripts
+
+    includes = data["tool"]["setuptools"]["packages"]["find"]["include"]
+    assert "hermeszooid" in includes
+    assert "hermeszooid.*" in includes
 
 
 def test_python_m_hermeszooid_print_home_ignores_hermes_home(tmp_path):
