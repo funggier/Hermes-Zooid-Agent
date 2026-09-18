@@ -211,16 +211,16 @@ pub(crate) fn resolve_hermes_desktop_exe(install_root: &std::path::Path) -> Opti
     let release_dir = install_root.join("apps").join("desktop").join("release");
     let candidates: &[(&str, &str)] = if cfg!(target_os = "windows") {
         &[
-            ("win-unpacked", "Hermes.exe"),
-            ("win-arm64-unpacked", "Hermes.exe"),
+            ("win-unpacked", "HermesZooid.exe"),
+            ("win-arm64-unpacked", "HermesZooid.exe"),
         ]
     } else if cfg!(target_os = "macos") {
         &[
-            ("mac/Hermes.app/Contents/MacOS", "Hermes"),
-            ("mac-arm64/Hermes.app/Contents/MacOS", "Hermes"),
+            ("mac/HermesZooid.app/Contents/MacOS", "HermesZooid"),
+            ("mac-arm64/HermesZooid.app/Contents/MacOS", "HermesZooid"),
         ]
     } else {
-        &[("linux-unpacked", "hermes")]
+        &[("linux-unpacked", "HermesZooid")]
     };
     for (subdir, exe) in candidates {
         let p = release_dir.join(subdir).join(exe);
@@ -235,7 +235,7 @@ pub(crate) fn resolve_hermes_desktop_app(install_root: &std::path::Path) -> Opti
     let exe = resolve_hermes_desktop_exe(install_root)?;
     #[cfg(target_os = "macos")]
     {
-        // .../Hermes.app/Contents/MacOS/Hermes -> .../Hermes.app
+        // .../HermesZooid.app/Contents/MacOS/Hermes -> .../HermesZooid.app
         let app = exe.parent()?.parent()?.parent()?.to_path_buf();
         if app.extension().and_then(|e| e.to_str()) == Some("app") && app.is_dir() {
             return Some(app);
@@ -831,7 +831,7 @@ async fn run_bootstrap(
         .hermes_home
         .clone()
         .unwrap_or_else(|| crate::paths::hermes_home().to_string_lossy().into_owned());
-    let install_root = PathBuf::from(&hermes_home).join("hermes-agent");
+    let install_root = PathBuf::from(&hermes_home).join("app");
 
     // Marker publish is terminal for this run: a write failure must emit Failed
     // so the UI leaves the progress state (it does not poll get_bootstrap_status).
@@ -1058,9 +1058,9 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     #[cfg(windows)]
-    const STDIO_HELPER_ENV: &str = "HERMES_BOOTSTRAP_STDIO_HELPER";
+    const STDIO_HELPER_ENV: &str = "HERMESZOOID_BOOTSTRAP_STDIO_HELPER";
     #[cfg(windows)]
-    const STDIO_SLEEPER_ENV: &str = "HERMES_BOOTSTRAP_STDIO_SLEEPER";
+    const STDIO_SLEEPER_ENV: &str = "HERMESZOOID_BOOTSTRAP_STDIO_SLEEPER";
     #[cfg(windows)]
     const STDIO_HELPER_TEST: &str = "bootstrap::tests::stdio_helper_launch";
     #[cfg(windows)]
@@ -1088,16 +1088,16 @@ mod tests {
         if cfg!(target_os = "macos") {
             let macos_dir = release
                 .join("mac-arm64")
-                .join("Hermes.app")
+                .join("HermesZooid.app")
                 .join("Contents")
                 .join("MacOS");
             std::fs::create_dir_all(&macos_dir).unwrap();
             std::fs::write(macos_dir.join("Hermes"), b"#!/bin/sh\n").unwrap();
-            macos_dir.parent().unwrap().parent().unwrap().to_path_buf() // .../Hermes.app
+            macos_dir.parent().unwrap().parent().unwrap().to_path_buf() // .../HermesZooid.app
         } else if cfg!(target_os = "windows") {
             let dir = release.join("win-unpacked");
             std::fs::create_dir_all(&dir).unwrap();
-            let exe = dir.join("Hermes.exe");
+            let exe = dir.join("HermesZooid.exe");
             std::fs::write(&exe, b"stub").unwrap();
             exe
         } else {
@@ -1111,7 +1111,7 @@ mod tests {
 
     // The relaunch / install target is derived from the rebuilt desktop app.
     // On macOS this MUST resolve to the .app bundle (what `open` relaunches and
-    // what the updater ditto's over /Applications/Hermes.app). A regression in
+    // what the updater ditto's over /Applications/HermesZooid.app). A regression in
     // this derivation breaks the post-update auto-relaunch, so guard it.
     #[test]
     fn resolve_hermes_desktop_app_finds_built_bundle() {
