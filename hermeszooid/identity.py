@@ -15,6 +15,8 @@ PRODUCT_TOKEN = "hermeszooid"
 HOME_ENV = "HERMESZOOID_HOME"
 LEGACY_ZOOID_HOME_ENV = "ZOOID_HOME"
 INHERITED_HERMES_HOME_ENV = "HERMES_HOME"
+GIT_BASH_ENV = "HERMESZOOID_GIT_BASH_PATH"
+INHERITED_GIT_BASH_ENV = "HERMES_GIT_BASH_PATH"
 
 
 def resolve_home(
@@ -59,5 +61,10 @@ def build_runtime_env(
     result.pop(LEGACY_ZOOID_HOME_ENV, None)
     result[HOME_ENV] = str(home)
     result[INHERITED_HERMES_HOME_ENV] = str(home)
+    git_bash = str(source.get(GIT_BASH_ENV, "")).strip()
+    if git_bash:
+        result[INHERITED_GIT_BASH_ENV] = git_bash
+    else:
+        result.pop(INHERITED_GIT_BASH_ENV, None)
     result["HERMESZOOID_PRODUCT"] = "1"
     return result

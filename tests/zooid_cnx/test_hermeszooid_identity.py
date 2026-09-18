@@ -59,6 +59,8 @@ def test_runtime_env_is_one_way_translation_without_mutating_parent(tmp_path):
         "HERMESZOOID_HOME": str(product_home),
         "HERMES_HOME": str(tmp_path / "live-hermes"),
         "ZOOID_HOME": str(tmp_path / "legacy-zooid"),
+        "HERMES_GIT_BASH_PATH": str(tmp_path / "live-hermes" / "git" / "bash.exe"),
+        "HERMESZOOID_GIT_BASH_PATH": str(product_home / "git" / "bin" / "bash.exe"),
         "KEEP_ME": "yes",
     }
     before = dict(parent)
@@ -69,6 +71,7 @@ def test_runtime_env_is_one_way_translation_without_mutating_parent(tmp_path):
     assert child["HERMESZOOID_HOME"] == str(product_home.resolve())
     assert child["HERMES_HOME"] == str(product_home.resolve())
     assert "ZOOID_HOME" not in child
+    assert child["HERMES_GIT_BASH_PATH"] == str(product_home / "git" / "bin" / "bash.exe")
     assert child["KEEP_ME"] == "yes"
 
 
