@@ -1,67 +1,70 @@
 # Task 013 — HermesZooid Gateway Service and Process Ownership
 
 - Task ID: `013-hermeszooid-gateway-service-process-ownership`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-19
+- Completed: 2026-09-19
 - Depends on: Task 012
-- Starting GREEN SHA: `427c426fd1e47f0d5568d82f5c809e68b3268db1`
+- Test-first commit: `d93d4e1bd02420acd9b46552453bbb406cee562b`
+- Production repair: `6d3390f4f9281e18f7839a5d1f418f3560d43ac5`
+- Test semantic repair: `496277bdeb13283c7a573675d7b678fa68e96c31`
+- Final Gateway Identity workflow: `35378080631` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-Package, installer, Desktop and setup identity are isolated, but inherited gateway lifecycle code still contains host-global Hermes identifiers and broad process matching.
-
-Observed collision surfaces include:
-- Windows Scheduled Task base `Hermes_Gateway`;
-- Windows gateway launcher invoking `python -m hermes_cli.main`;
-- generated gateway wrappers writing `HERMES_HOME` directly;
-- systemd service base `hermes-gateway`;
-- launchd label `ai.hermes.gateway`;
-- whole-fleet scans using `hermes-gateway*` and `ai.hermes.gateway*`;
-- fallback process scans that recognize generic `gateway run` command lines and can therefore see a genuine Hermes process;
-- restart argv rebuilt with `-m hermes_cli.main`.
-
-These are dangerous because `hermeszooid gateway stop/restart --all` must never select, terminate, protect-as-self, or respawn the user's existing Hermes gateway.
-
-## Canonical gateway identity
-
-- Windows Scheduled Task base: `HermesZooid_Gateway`;
-- systemd base: `hermeszooid-gateway`;
-- launchd base: `com.funggier.hermeszooid.gateway`;
-- generated launcher command: `python -m hermeszooid ... gateway run`;
-- generated launcher product home: `HERMESZOOID_HOME`;
-- process-selection marker: HermesZooid product command identity, not generic Hermes gateway syntax.
+Gateway lifecycle identity was still inherited from Hermes after package/installer/Desktop/setup isolation.
+That left a friendly-fire risk: broad process scans and host-global service names could make HermesZooid lifecycle operations see an existing Hermes gateway.
 
 ## Ownership invariant
 
-A command line is targetable by HermesZooid lifecycle operations only when BOTH conditions hold:
+A process is targetable by HermesZooid lifecycle operations only when both are true:
 1. it is a valid gateway runtime command;
-2. it belongs to HermesZooid product identity.
+2. it carries HermesZooid product identity.
 
-`hermes gateway run`, `python -m hermes_cli.main gateway run`, and bare `zooid` processes must not satisfy condition 2.
+Existing Hermes and bare Zooid commands fail condition 2.
 
-## TDD contract
+## Test-first boundary
 
-RED first. Prove:
-1. a stdlib-only HermesZooid gateway identity authority exists;
-2. it recognizes `hermeszooid` / `python -m hermeszooid` and rejects Hermes/bare Zooid command lines;
-3. Windows task name/description are HermesZooid-owned;
-4. generated Windows CMD/VBS launchers carry `HERMESZOOID_HOME` and invoke `-m hermeszooid`, not `-m hermes_cli.main`;
-5. elevated Windows gateway commands re-enter through `-m hermeszooid`;
-6. systemd base/fleet glob are `hermeszooid-gateway*`;
-7. launchd base/fleet scan are `com.funggier.hermeszooid.gateway*`;
-8. fallback `_scan_gateway_pids` excludes a real Hermes command even under `all_profiles=True`;
-9. `_capture_gateway_argv` refuses a Hermes command line so force-kill/restart cannot replay it;
-10. HermesZooid restart argv is rebuilt through `-m hermeszooid`.
+`d93d4e1bd02420acd9b46552453bbb406cee562b` defined the gateway ownership contract.
+GitHub Actions did not create a run for this commit before the next push, so it is recorded as a test-first boundary, not an executed RED.
 
-## Out of scope
+## Production repair
 
-- listener/default port allocation;
-- shared external bot-token policy;
-- updater disablement;
-- reset/uninstall/install-over destructive qualification.
+`6d3390f4f9281e18f7839a5d1f418f3560d43ac5` added `hermeszooid/gateway_identity.py` and wired the product fence into lifecycle code.
 
-Those become later numbered tasks so each safety boundary can be proven independently.
+Qualified identifiers:
+- Windows Scheduled Task base: `HermesZooid_Gateway`;
+- systemd base: `hermeszooid-gateway`;
+- launchd base: `com.funggier.hermeszooid.gateway`;
+- supervisor launchers re-enter through `python -m hermeszooid`;
+- Windows CMD/VBS launchers carry `HERMESZOOID_HOME`;
+- all-profile process scans require HermesZooid product identity;
+- captured/replayed restart argv refuses genuine Hermes command lines.
 
-## Immediate next action
+## First implementation run
 
-Commit RED gateway identity/process-selection contracts and a focused standard-runner workflow, then minimally repair gateway lifecycle ownership until GREEN.
+Gateway Identity run `35378010606` reached all four focused tests and failed one assertion because the test expected an inline expression while the implementation used an equivalent local variable.
+That was a test-shape defect, not a production ownership defect.
+
+## GREEN
+
+Test semantic repair `496277bdeb13283c7a573675d7b678fa68e96c31` aligned the assertion with behavior.
+
+Final focused evidence on the same SHA:
+- Gateway Identity `35378080631` — SUCCESS;
+- HermesZooid Identity `35378080992` — SUCCESS;
+- Desktop Identity `35378080635` — SUCCESS;
+- Windows Installer Identity `35378080666` — SUCCESS;
+- Bootstrap Setup Identity `35378080702` — SUCCESS;
+- CogentNexus Kernel `35378081305` — SUCCESS;
+- Docker `35378081015` — SUCCESS.
+
+## Result
+
+PASS.
+
+HermesZooid gateway service/process ownership is separated from existing Hermes and the separate Zooid product.
+
+## Follow-up
+
+Task 014 audits and separates listener/default-port ownership. No port is changed ad hoc; all port-binding adapters must be inventoried first.

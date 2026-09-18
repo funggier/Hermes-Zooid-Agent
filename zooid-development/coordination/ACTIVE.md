@@ -1,23 +1,23 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `013-hermeszooid-gateway-service-process-ownership`
+- Active Task: `014-hermeszooid-listener-port-coexistence`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
-- Last GREEN SHA: `427c426fd1e47f0d5568d82f5c809e68b3268db1`
+- Last GREEN SHA: `496277bdeb13283c7a573675d7b678fa68e96c31`
 - Canonical product token: `hermeszooid`
 
 ## Active task
 
-[Task 013 — HermesZooid Gateway Service and Process Ownership](../tasks/013-hermeszooid-gateway-service-process-ownership.md)
+[Task 014 — HermesZooid Listener and Port Coexistence](../tasks/014-hermeszooid-listener-port-coexistence.md)
 
 ## Immediate next action
 
-Write RED contracts for host service names and real process-selection fences, then repair gateway lifecycle ownership.
+Inventory every local port-binding surface and inherited default before assigning any HermesZooid listener defaults.
 
 ## Real-machine boundary
 
-Do not install yet. Package, installer, Desktop and setup identity are GREEN; gateway/process ownership, listeners, updater and destructive lifecycle coexistence remain unqualified.
+Do not install yet. Service/process ownership is GREEN; listener ports, updater behavior and destructive lifecycle coexistence remain unqualified.
 
-Next unused task ID: 014.
+Next unused task ID: 015.

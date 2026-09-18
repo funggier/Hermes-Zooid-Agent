@@ -9,24 +9,27 @@ Bare `zooid` is reserved for the separate Zooid project.
 
 ## Completed
 
-Tasks 009–012 are DONE/GREEN:
+Tasks 009–013 are DONE/GREEN:
 - package/CLI/home;
 - Windows installer;
 - Electron Desktop;
-- Tauri bootstrap setup.
+- Tauri bootstrap setup;
+- gateway service/process ownership and friendly-fire fence.
+
+Latest qualified SHA before this documentation checkpoint: `496277bdeb13283c7a573675d7b678fa68e96c31`.
 
 ## Active
 
-Task 013 — Gateway Service and Process Ownership.
+Task 014 — Listener and Port Coexistence.
 
-Primary safety target: a HermesZooid stop/restart/update-style scan must never select a genuine Hermes gateway process.
+Do not guess or change one gateway port in isolation. First inventory every local port-binding adapter/default and shared-ingress relationship.
 
 ## Resume order
 
 1. `zooid-development/AGENTS.md`
 2. this file
 3. `coordination/ACTIVE.md`
-4. `tasks/013-hermeszooid-gateway-service-process-ownership.md`
+4. `tasks/014-hermeszooid-listener-port-coexistence.md`
 5. `coordination/STATUS.md`
 
 ## Safety

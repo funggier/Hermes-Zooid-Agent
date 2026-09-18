@@ -10,7 +10,8 @@ Task IDs increase monotonically and are never reused or renumbered.
 | 010 | DONE / GREEN | Windows CLI installer independence |
 | 011 | DONE / GREEN | Desktop OS/runtime identity independence |
 | 012 | DONE / GREEN | Bootstrap setup identity independence |
-| [013](013-hermeszooid-gateway-service-process-ownership.md) | ACTIVE | Gateway service/process ownership |
+| 013 | DONE / GREEN | Gateway service/process ownership |
+| [014](014-hermeszooid-listener-port-coexistence.md) | ACTIVE | Listener/default-port coexistence |
 
 Canonical machine token: `hermeszooid`; bare `zooid` is reserved for the separate Zooid project.
 New sessions start with `../coordination/SESSION-HANDOFF.md`.

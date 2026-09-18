@@ -10,20 +10,22 @@
 | 010 | DONE / GREEN | Windows CLI installer isolated |
 | 011 | DONE / GREEN | Desktop OS/runtime identity isolated |
 | 012 | DONE / GREEN | Bootstrap setup identity isolated |
-| 013 | ACTIVE | Gateway service/process ownership |
+| 013 | DONE / GREEN | Gateway service/process ownership isolated |
+| 014 | ACTIVE | Listener/default-port coexistence |
 
 ## Latest GREEN evidence
 
-- SHA `427c426fd1e47f0d5568d82f5c809e68b3268db1`
-- Bootstrap Setup `35363272722`: SUCCESS
-- Desktop `35363272731`: SUCCESS
-- Identity `35363272711`: SUCCESS
-- CogentNexus `35363272609`: SUCCESS
-- Windows Installer `35363272816`: SUCCESS
-- Docker `35363272677`: SUCCESS
+- SHA `496277bdeb13283c7a573675d7b678fa68e96c31`
+- Gateway Identity `35378080631`: SUCCESS
+- Identity `35378080992`: SUCCESS
+- Desktop `35378080635`: SUCCESS
+- Windows Installer `35378080666`: SUCCESS
+- Bootstrap Setup `35378080702`: SUCCESS
+- CogentNexus `35378081305`: SUCCESS
+- Docker `35378081015`: SUCCESS
 
 ## Collision status
 
-Install/package/Desktop/setup roots are isolated from Hermes and bare Zooid.
+Product roots, installers, Desktop/setup identity, services and lifecycle process targeting are isolated from Hermes and bare Zooid.
 
-Gateway host-global identities and process targeting are still inherited and therefore real-machine installation remains blocked.
+Default listener ports are not yet qualified for simultaneous Hermes + HermesZooid operation, so real-machine installation remains blocked.
