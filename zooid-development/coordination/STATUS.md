@@ -1,34 +1,19 @@
 # Development Status
 
-**Project: ACTIVE**
+**Project: ACTIVE — PRODUCT INDEPENDENCE FIRST**
 
-Current task:
-[008 — Bounded Live Provider Acceptance](../tasks/008-bounded-live-provider-acceptance.md)
+Current task: [009 — hermeszooid CLI and Home Independence](../tasks/009-hermeszooid-cli-home-independence.md)
 
 | Task | State | Result |
 | --- | --- | --- |
-| 001 | DONE | Upstream baseline + planning isolation |
-| 002 | DONE / GREEN | Durable semantic kernel |
-| 003 | DONE / GREEN | Generic executor bridge |
-| 004 | DONE / GREEN | Real Hermes Kanban executor |
-| 005 | DONE / GREEN | Real dispatcher lifecycle |
-| 006 | DONE / GREEN | Isolated dispatcher child |
-| 007 | DONE / GREEN | Real Hermes worker spawn envelope |
-| 008 | SOURCE_READY / LIVE BLOCKED | Source contracts GREEN; real provider evidence pending |
+| 001–007 | DONE / GREEN | CogentNexus execution path through real Hermes worker spawn envelope |
+| 008 | PAUSED / SOURCE_READY | Provider acceptance code GREEN; live run intentionally deferred |
+| 009 | ACTIVE | Root product CLI/home independence |
 
-## Proven chain
+## Collision status
 
-`CogentNexus -> real Kanban -> real dispatcher -> isolated process boundary -> real Hermes worker spawn envelope`
+Current inherited product surfaces are still not safe for side-by-side installation with existing Hermes.
 
-Task 008 source additionally proves provider/model pinning, bounded dispatcher mode, structured worker evidence handling, independent local artifact SHA verification, and read-only preflight.
+Task 009 begins the repair with canonical token `hermeszooid`, CLI `hermeszooid`, and `HERMESZOOID_HOME`.
 
-## Latest source evidence
-
-- Source-ready SHA: `e18e3e9705b3312b97a8f231924e5c8e9af2f94e`
-- Zooid workflow: `35357955959` — SUCCESS
-- Earlier Task 008 source implementation workflow: `35357510149` — SUCCESS
-- Docker on source implementation SHA: `35357510176` — SUCCESS
-
-## Current gap
-
-A credentialed provider/model has not yet completed the bounded acceptance on a real Hermes-configured machine. The project must not represent that boundary as GREEN until the live receipt exists.
+Real-machine installation remains prohibited until coexistence acceptance is GREEN.

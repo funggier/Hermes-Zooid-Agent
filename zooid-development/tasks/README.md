@@ -11,8 +11,8 @@ Task IDs increase monotonically and are never reused or renumbered.
 | 005 | DONE / GREEN | Dispatcher lifecycle |
 | 006 | DONE / GREEN | Dispatcher process boundary |
 | 007 | DONE / GREEN | Real worker subprocess envelope |
-| [008](008-bounded-live-provider-acceptance.md) | SOURCE_READY / LIVE BLOCKED | Bounded live provider acceptance |
+| 008 | PAUSED / SOURCE_READY | Bounded live provider acceptance |
+| [009](009-hermeszooid-cli-home-independence.md) | ACTIVE | hermeszooid CLI/home independence |
 
-Task 009 is not opened until Task 008 has real provider evidence.
-
+Canonical product token from Task 009 onward: `hermeszooid`.
 New sessions start with `../coordination/SESSION-HANDOFF.md`.
