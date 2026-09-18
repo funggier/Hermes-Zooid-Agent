@@ -6,18 +6,20 @@
 | --- | --- | --- |
 | 001–007 | DONE / GREEN | Execution foundation |
 | 008 | PAUSED / SOURCE_READY | Live provider acceptance deferred |
-| 009 | DONE / GREEN | `hermeszooid` distribution/CLI/home isolated from Hermes and Zooid |
-| 010 | ACTIVE | Windows installer independence |
+| 009 | DONE / GREEN | Distribution/CLI/home isolated from Hermes and Zooid |
+| 010 | DONE / GREEN | Windows CLI installer isolated |
+| 011 | ACTIVE | Desktop OS/runtime identity independence |
 
 ## Latest evidence
 
-- HEAD: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
-- HermesZooid Identity `35360523016`: SUCCESS
-- Zooid CogentNexus `35360522931`: SUCCESS
-- Docker: SUCCESS
+- HEAD before Task 011 docs: `14dae17beb6cb0aaa5f0988fb85224c8191426bd`
+- HermesZooid Windows Installer Identity `35361401981`: SUCCESS
+- HermesZooid Identity `35361402036`: SUCCESS
+- HermesZooid CogentNexus Kernel `35361402094`: SUCCESS
+- Docker `35361401966`: SUCCESS
 
 ## Collision status
 
-Package/CLI/home collision is repaired. Windows installer, Desktop and lifecycle resources are not yet qualified for side-by-side installation.
+Package, CLI, runtime home, internal CogentNexus namespace, and Windows CLI installer are isolated.
 
-Real-machine install remains blocked.
+Desktop still owns inherited Hermes app ID/protocol/userData/home/bootstrap identifiers, so real-machine installation remains blocked.

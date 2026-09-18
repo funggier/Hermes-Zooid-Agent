@@ -1,66 +1,64 @@
 # Task 010 — HermesZooid Windows Installer Independence
 
 - Task ID: `010-hermeszooid-windows-installer-independence`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 009
-- Starting GREEN SHA: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
+- RED commit: `8f0eddfa151b2511a792212f7e647fd845c893b5`
+- Production repair: `08ad934fb2777c1eee411df5ca4e28905e45d82a`
+- Current namespace-clean GREEN SHA: `14dae17beb6cb0aaa5f0988fb85224c8191426bd`
+- Windows Installer workflow on current HEAD: `35361401981` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-Task 009 isolates Python package/CLI/home ownership, but inherited `scripts/install.ps1` still contains Hermes-owned defaults and lifecycle behavior.
+Task 009 separated distribution, CLI, and product home, but the inherited Windows installer still owned Hermes paths, launchers, repository URLs, persistent environment variables, and lifecycle targets.
 
-Current inherited installer risks include:
-- default `%LOCALAPPDATA%\hermes` root;
-- `HERMES_HOME` input;
-- `hermes-agent` source directory;
-- upstream `NousResearch/hermes-agent` clone URLs;
-- PATH launchers named `hermes` / `hermes-acp`;
-- portable Git/runtime resources under Hermes paths;
-- process cleanup targeting `hermes.exe` and Hermes scheduled tasks;
-- user environment variables with `HERMES_*` ownership.
+That could collide with an existing Hermes installation even though the Python runtime itself was isolated.
 
-Those can collide with the existing Hermes installation even after Task 009.
+## RED
 
-## Canonical Windows installer ownership
+Commit `8f0eddfa151b2511a792212f7e647fd845c893b5` added two independent contracts:
 
-- product root: `%LOCALAPPDATA%\hermeszooid`
-- explicit root env: `HERMESZOOID_HOME`
-- source/app directory: `%LOCALAPPDATA%\hermeszooid\app`
-- PATH launcher: `hermeszooid` only
-- repository: `funggier/Hermes-Zooid-Agent`
-- product-owned helper/runtime resources stay under `%LOCALAPPDATA%\hermeszooid`
+1. static installer ownership;
+2. real `install.ps1 -ShowResolvedPaths` behavior on `windows-latest`.
 
-No installer resource may use bare `zooid`, `%LOCALAPPDATA%\zooid`, `ZOOID_HOME`, or the existing Hermes writable root.
+The Windows RED proved the inherited installer did not expose/resolve `hermeszooid_home` and still followed Hermes ownership.
 
-## Safety invariant
+## Repair
 
-Running any non-destructive installer introspection/test must leave existing Hermes resources unchanged.
+Commit `08ad934fb2777c1eee411df5ca4e28905e45d82a` changed machine-owning installer resources to HermesZooid:
 
-The installer must never terminate `hermes.exe`, delete Hermes scheduled tasks, alter Hermes user env vars, or place a `hermes` launcher on PATH.
+- root `%LOCALAPPDATA%\hermeszooid`;
+- root env `HERMESZOOID_HOME`;
+- app dir `<root>\app`;
+- repository `funggier/Hermes-Zooid-Agent`;
+- PATH launcher `hermeszooid` only;
+- persistent helper env `HERMESZOOID_GIT_BASH_PATH`;
+- no persistent `HERMES_HOME` or `ZOOID_HOME` writes;
+- lifecycle target `hermeszooid.exe` / `HermesZooid_Gateway`, never existing Hermes resources;
+- inherited `HERMES_HOME` / `HERMES_GIT_BASH_PATH` are process-local compatibility translations only.
 
-## TDD plan
+## GREEN
 
-RED first with a Windows-standard-runner contract that proves:
-1. `-ShowResolvedPaths` ignores inherited `HERMES_HOME` and `ZOOID_HOME`;
-2. default root is `%LOCALAPPDATA%\hermeszooid`;
-3. default app dir is `<root>\app`;
-4. explicit `HERMESZOOID_HOME` wins;
-5. installer source repo points to `funggier/Hermes-Zooid-Agent`;
-6. launcher set contains `hermeszooid` and no `hermes`, `hermes-agent`, `hermes-acp`, or `zooid`;
-7. static lifecycle ownership test rejects Hermes process/task cleanup in HermesZooid installer;
-8. no bare Zooid runtime root/env ownership remains.
+Dedicated `HermesZooid Windows Installer Identity` workflow passed both:
 
-## Non-goals
+- Installer ownership static contract;
+- Windows resolved paths contract.
 
-- Desktop productName/app ID/protocol/shortcut;
-- updater ownership;
-- uninstall/reset qualification;
-- live machine install;
-- live provider acceptance.
+On current namespace-clean HEAD `14dae17beb6cb0aaa5f0988fb85224c8191426bd`, workflow `35361401981` is SUCCESS.
 
-Those receive later numbered tasks.
+The same HEAD also has:
+- HermesZooid Identity `35361402036` — SUCCESS;
+- HermesZooid CogentNexus Kernel `35361402094` — SUCCESS;
+- Docker `35361401966` — SUCCESS.
 
-## Immediate next action
+## Result
 
-Add the Windows installer RED contract and dedicated standard-runner workflow, then minimally rewrite `scripts/install.ps1` until the contract is GREEN.
+PASS.
+
+Windows CLI installer ownership is isolated from both existing Hermes and the separate Zooid project.
+
+## Follow-up
+
+Task 011 isolates Desktop OS identity, userData/runtime home, deep-link protocol, bootstrap root/repository, shortcut/uninstall identity, and AppUserModelID.

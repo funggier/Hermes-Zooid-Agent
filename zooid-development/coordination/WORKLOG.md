@@ -1,10 +1,16 @@
 # Work Log
 
 ## 2026-09-18 — Task 009 DONE / GREEN
-RED `f045c272c530d8d32571d131e4341fdf0617e2a8` proved the new package did not yet exist.
-Final tested SHA `71f30c93b68bfcd46c8eea08c57ba33298ca682d`.
-HermesZooid Identity `35360523016` SUCCESS; CogentNexus `35360522931` SUCCESS; Docker SUCCESS.
-Distribution/CLI/home now use `hermeszooid` and do not select state from `HERMES_HOME` or `ZOOID_HOME`.
+HermesZooid distribution/CLI/home identity qualified.
 
-## 2026-09-18 — Task 010 ACTIVE
-Opened Windows installer independence. Real-machine installation remains blocked.
+## 2026-09-18 — Task 010 DONE / GREEN
+Production repair `08ad934fb2777c1eee411df5ca4e28905e45d82a`.
+Current namespace-clean HEAD `14dae17beb6cb0aaa5f0988fb85224c8191426bd` retains GREEN installer behavior.
+Windows Installer Identity `35361401981` SUCCESS.
+
+## 2026-09-18 — Runtime namespace cleanup
+`14dae17beb6cb0aaa5f0988fb85224c8191426bd` retired legacy `zooid_cnx` runtime namespace in favor of `hermeszooid.cnx`.
+Identity, CogentNexus, Windows installer and Docker workflows are GREEN.
+
+## 2026-09-18 — Task 011 ACTIVE
+Opened Desktop OS/runtime identity independence. Real-machine installation remains blocked.
