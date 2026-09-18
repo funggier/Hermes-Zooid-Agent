@@ -3,35 +3,30 @@
 **Project: ACTIVE**
 
 Current task:
-[006 — Zooid Dispatcher Process Boundary](../tasks/006-zooid-dispatcher-process-boundary.md)
+[007 — Hermes Worker Subprocess Envelope](../tasks/007-hermes-worker-subprocess-envelope.md)
 
 | Task | State | Result |
 | --- | --- | --- |
-| 001 | DONE | Current Hermes baseline + Zooid planning isolation |
-| 002 | DONE / GREEN | Durable CogentNexus kernel |
-| 003 | DONE / GREEN | Executor-neutral execution bridge |
-| 004 | DONE / GREEN | Concrete Hermes Kanban executor |
-| 005 | DONE / GREEN | Real dispatcher claim/workspace/run lifecycle |
-| 006 | ACTIVE | Dedicated dispatcher process boundary |
+| 001 | DONE | Upstream baseline + planning isolation |
+| 002 | DONE / GREEN | Durable semantic kernel |
+| 003 | DONE / GREEN | Generic executor bridge |
+| 004 | DONE / GREEN | Real Hermes Kanban executor |
+| 005 | DONE / GREEN | Real dispatcher lifecycle |
+| 006 | DONE / GREEN | Isolated dispatcher child process |
+| 007 | ACTIVE | Real worker spawn envelope |
 
-## Proven capability
+## Proven chain
 
-The repository now proves:
+`CogentNexus -> real Kanban card -> real dispatcher lifecycle -> Zooid-owned dispatcher child boundary`
 
-`CogentNexus Ticket -> Step -> real Kanban card -> real Hermes dispatcher claim -> Zooid workspace -> RUNNING -> structured Evidence -> Ticket DONE`
-
-The worker process itself was represented by an injected spawn callback in Task 005. Provider
-execution has not yet been claimed as working.
+The worker/model process itself remains the next unqualified boundary.
 
 ## Latest evidence
 
-- Tested SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
-- Zooid workflow: `35355516901` — SUCCESS
-- Docker: SUCCESS
+- SHA: `0db88c097293df5182f084de32971c7abe207414`
+- Zooid workflow: `35356146655` — SUCCESS
 
-## Current gap
+## Next
 
-Dispatcher mechanics are proven in-process. Zooid still needs a process-owned runtime boundary
-so Kanban location/environment is isolated without process-global mutation.
-
-After Task 006, a bounded real worker/provider acceptance task can be opened.
+Prove real Hermes worker spawn/env behavior with a fake provider-free executable, then open a
+bounded real model/provider acceptance task.

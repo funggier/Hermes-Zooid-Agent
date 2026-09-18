@@ -1,111 +1,94 @@
 # Task 006 — Zooid Dispatcher Process Boundary
 
 - Task ID: `006-zooid-dispatcher-process-boundary`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 005
-- Starting GREEN SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- RED commit: `eb02d3a804048ad8b0640349e81f06995a70c1bb`
+- Implementation commit: `0db88c097293df5182f084de32971c7abe207414`
+- Authoritative Zooid workflow: `35356146655` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-Task 005 proves Hermes dispatcher mechanics work with a Zooid-created card, but the test invokes
-the dispatcher inside the same Python process.
+Task 005 proved Hermes dispatcher mechanics in-process, but a real Zooid runtime cannot safely
+route different boards by temporarily changing process-global HERMES_KANBAN_* variables.
 
-A real Zooid runtime must avoid changing process-global `HERMES_KANBAN_*` variables around
-individual calls. That would become a race as soon as more than one Project/session/dispatcher
-exists in the same process.
+That design would race as soon as more than one Project/session exists in the same parent
+process.
 
-The correct ownership boundary is a dedicated dispatcher process whose environment is fixed at
-process creation.
+## Decision
 
-## Goal
+The durable boundary is a dedicated child process.
 
-Create a Zooid-owned process boundary around current Hermes dispatcher mechanics.
-
-Parent Zooid process:
+Parent Zooid:
 
 - owns CogentNexus semantic state;
-- creates the dedicated Kanban board;
-- builds the dispatcher environment;
-- starts/stops the dispatcher process;
-- never mutates its own HERMES_KANBAN_* environment to route work.
+- constructs an explicit child environment;
+- never mutates its own Kanban routing environment.
 
 Dispatcher child:
 
-- receives immutable Zooid-owned Kanban paths in its environment;
-- opens only the Zooid board;
-- uses current Hermes dispatcher mechanics;
-- later may launch real Hermes workers.
+- receives immutable Zooid-owned Kanban paths at process creation;
+- validates argv/environment identity before opening the board;
+- opens the same durable Zooid board;
+- emits an atomic ready receipt;
+- can be terminated and restarted without changing board identity.
 
-## Target topology
+## RED
 
-```text
-Zooid / CogentNexus parent
-        |
-        | subprocess env
-        v
-Zooid dispatcher child
-        |
-        | Hermes Kanban dispatcher
-        v
-Zooid-owned kanban.db
-        |
-        v
-worker process boundary
-```
+Commit:
 
-## Initial contract
+`eb02d3a804048ad8b0640349e81f06995a70c1bb`
 
-Before launching a real provider/model, prove:
+The Zooid workflow failed during collection because `zooid_cnx.dispatcher_process` did not yet
+exist. This is the authoritative RED boundary.
 
-1. parent environment remains unchanged;
-2. child receives exactly the paths returned by `HermesKanbanExecutor.worker_env()`;
-3. child can open the same Zooid Kanban DB;
-4. child observes the intended board/card;
-5. child lifecycle can be started and stopped deterministically;
-6. no live Hermes board/config is touched;
-7. restart uses the same durable board.
+## Implementation
 
-## Design constraints
+Commit:
 
-- Do not implement another scheduler.
-- Reuse current Hermes dispatcher.
-- No temporary parent-process HERMES_KANBAN_* mutation.
-- Child process environment must be explicit.
-- Child termination must be bounded and observable.
-- Board/database identity must be durable across restart.
-- Provider/model execution is still outside this task's acceptance boundary.
+`0db88c097293df5182f084de32971c7abe207414`
 
-## Expected code direction
+Added:
 
-A small Zooid-owned runtime layer, for example:
+- `zooid_cnx/dispatcher_process.py`
+- `zooid_cnx/dispatcher_child.py`
 
-- `zooid_cnx/dispatcher_process.py` — parent-side lifecycle/process contract;
-- `zooid_cnx/dispatcher_child.py` — child entrypoint.
+The parent process builds a copied environment, scrubs worker-specific Kanban identity, pins
+ZOOID_HOME and all Zooid Kanban paths, then uses Popen(env=...) without changing os.environ.
 
-Exact names may change if implementation evidence gives a better boundary.
+The child fails closed if DB/board argv disagree with its environment.
 
-The child should be narrow: it is not a second scheduler, only a process host for Hermes'
-existing dispatcher.
+Ready state is written atomically to:
 
-## TDD
+`<state_dir>/dispatcher-ready.json`
 
-Write RED tests first for:
+and includes PID, DB path, board, task IDs and the observed Kanban environment.
 
-- environment isolation;
-- deterministic argv/environment;
-- process start/stop;
-- same-board visibility;
-- restart stability.
+## GREEN
 
-Then implement the minimum process boundary required for GREEN.
+Workflow:
 
-## Acceptance
+`35356146655` — SUCCESS.
 
-Task 006 is DONE when a standard GitHub runner proves the process boundary without a real
-provider/model and exact evidence is recorded here.
+The contract proves:
 
-## Immediate next action
+- parent HERMES_KANBAN_DB/HERMES_KANBAN_BOARD remain unchanged;
+- child receives Zooid routing;
+- inherited worker identity is removed from child env;
+- child sees the same durable card;
+- stop is bounded;
+- restart sees the same board/task again.
 
-Audit existing Hermes daemon/CLI entrypoints for reusable dispatcher functions, then define the
-RED process-boundary contract.
+## Result
+
+PASS.
+
+Zooid now has a concurrency-safe process boundary for hosting dispatcher work without routing via
+parent-process global mutation.
+
+## Follow-up
+
+Task 007 qualifies the worker subprocess envelope used by Hermes dispatcher before any real
+provider/model request is allowed.

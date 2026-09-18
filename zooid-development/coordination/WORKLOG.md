@@ -1,33 +1,23 @@
 # Work Log
 
-Chronological compact log. Detailed history lives in numbered tasks.
+Chronological compact log; numbered tasks hold full details.
 
-## 2026-09-18 — Task 001 DONE
-Synced current Hermes upstream and isolated Zooid planning.
-
-## 2026-09-18 — Task 002 DONE / GREEN
-Durable CogentNexus kernel.
-
-## 2026-09-18 — Task 003 DONE / GREEN
-Generic external execution bridge. Workflow `35352550001` SUCCESS.
-
-## 2026-09-18 — Task 004 DONE / GREEN
-Real Hermes Kanban executor. Final SHA `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`.
-Workflow `35354752792` SUCCESS.
-
-## 2026-09-18 — Task 005 RED
-Commit `2a7131b8e16fa0a53cb4e4a152894faa39997019`.
-Workflow `35355192806` FAILURE: adapter lacked explicit assignee contract.
-
-## 2026-09-18 — Task 005 production repair
-Commit `9aee6577c87ef509ba4f33559ab0dbe2f1d745e0`.
-Added assignee and persisted absolute Zooid workspace.
+## 2026-09-18 — Tasks 001–004
+Repository isolation, durable kernel, generic bridge and real Kanban executor reached GREEN.
 
 ## 2026-09-18 — Task 005 GREEN
-Final test harness commit `e37b3d1b21e9446683b83f2eae311ff4160c46fb`.
-Synthetic PID fingerprint isolated; real Hermes dispatcher lifecycle remained under test.
-Zooid workflow `35355516901` SUCCESS. Docker SUCCESS.
+Final SHA `e37b3d1b21e9446683b83f2eae311ff4160c46fb`.
+Workflow `35355516901` SUCCESS.
+Real dispatcher claim/workspace/run/evidence lifecycle proven.
 
-## 2026-09-18 — Task 006 ACTIVE
-Opened dedicated dispatcher process boundary to eliminate parent-process Kanban env races before
-real worker/provider acceptance.
+## 2026-09-18 — Task 006 RED
+Commit `eb02d3a804048ad8b0640349e81f06995a70c1bb`.
+Missing dispatcher_process module as expected.
+
+## 2026-09-18 — Task 006 DONE / GREEN
+Implementation `0db88c097293df5182f084de32971c7abe207414`.
+Workflow `35356146655` SUCCESS.
+Dedicated child process sees the same Zooid board while parent env remains unchanged.
+
+## 2026-09-18 — Task 007 ACTIVE
+Opened real Hermes worker subprocess-envelope qualification with a provider-free fake executable.

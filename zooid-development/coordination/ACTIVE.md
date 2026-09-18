@@ -1,35 +1,24 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `006-zooid-dispatcher-process-boundary`
+- Active Task: `007-hermes-worker-subprocess-envelope`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
-- Working branch: `agent/zooid-independence`
+- Branch: `agent/zooid-independence`
 - Upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- Last GREEN code SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
-- Last GREEN Zooid run: `35355516901`
+- Last GREEN code SHA: `0db88c097293df5182f084de32971c7abe207414`
+- Last GREEN Zooid workflow: `35356146655`
 
 ## Active task
 
-[Task 006 — Zooid Dispatcher Process Boundary](../tasks/006-zooid-dispatcher-process-boundary.md)
+[Task 007 — Hermes Worker Subprocess Envelope](../tasks/007-hermes-worker-subprocess-envelope.md)
 
 ## Immediate next action
 
-Audit current Hermes dispatcher daemon/CLI entrypoints, then write RED tests for an isolated
-child process whose Kanban environment is fixed at spawn and whose parent environment is
-unchanged.
-
-## Resume rule
-
-Read `SESSION-HANDOFF.md` first.
-
-Next unused task ID after this task is 007.
+Define RED tests around Hermes `_default_spawn` using a provider-free fake HERMES_BIN that
+records the child argv/environment/cwd.
 
 ## Boundaries
 
-- no force push;
-- keep main as clean upstream mirror;
-- no live Hermes/OpenClaw mutation;
-- no real provider/model call yet;
-- no parent-process HERMES_KANBAN_* mutation;
-- evidence gating remains authoritative.
+No real provider/model call. No live Hermes/OpenClaw mutation. No force push. Main stays clean.
+Next unused task ID: 008.
