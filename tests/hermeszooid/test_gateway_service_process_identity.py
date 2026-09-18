@@ -46,7 +46,8 @@ def test_gateway_source_wires_product_fence_into_scan_and_capture_paths():
 
     assert "from hermeszooid.gateway_identity import" in source
     assert "command_belongs_to_product(command)" in source
-    assert 'command_belongs_to_product(" ".join(argv))' in source
+    assert 'command = " ".join(argv)' in source
+    assert "command_belongs_to_product(command)" in source
 
     assert "_SERVICE_BASE = SYSTEMD_SERVICE_BASE" in source
     assert 'pattern = f"{SYSTEMD_SERVICE_BASE}*"' in source
