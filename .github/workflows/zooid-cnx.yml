@@ -30,8 +30,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install pinned test dependency
-        run: python -m pip install --disable-pip-version-check pytest==9.1.1
+      - name: Install pinned contract dependencies
+        run: >-
+          python -m pip install --disable-pip-version-check
+          pytest==9.1.1
+          pyyaml==6.0.3
 
       - name: Run isolated CogentNexus contracts
         run: >-
