@@ -33,5 +33,9 @@ jobs:
       - name: Install pinned test dependency
         run: python -m pip install --disable-pip-version-check pytest==9.1.1
 
-      - name: Run CogentNexus kernel contract
-        run: python -m pytest tests/zooid_cnx/test_runtime.py -q
+      - name: Run isolated CogentNexus kernel contract
+        run: >-
+          python -m pytest
+          --confcutdir=tests/zooid_cnx
+          tests/zooid_cnx/test_runtime.py
+          -q
