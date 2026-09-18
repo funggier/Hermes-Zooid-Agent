@@ -30,6 +30,8 @@ from hermes_cli._subprocess_compat import (
     windows_hide_flags,
 )
 
+from hermeszooid.gateway_identity import WINDOWS_TASK_BASE
+
 logger = logging.getLogger(__name__)
 
 # Short timeouts: schtasks occasionally wedges and we don't want to hang forever.
@@ -46,8 +48,8 @@ _ACCESS_DENIED_PATTERN = re.compile(r"(access is denied|acceso denegado)", re.IG
 # shell exits. Dict (not bare bool) so the flag is mutable without ``global``.
 _LAST_SPAWN_BREAKAWAY_FALLBACK: dict = {"fallback": False}
 
-_TASK_NAME_DEFAULT = "Hermes_Gateway"
-_TASK_DESCRIPTION = "Hermes Agent Gateway - Messaging Platform Integration"
+_TASK_NAME_DEFAULT = WINDOWS_TASK_BASE
+_TASK_DESCRIPTION = "HermesZooid Gateway - Messaging Platform Integration"
 _TASK_LOGON_DELAY = "PT30S"
 _TASK_RESTART_INTERVAL = "PT1M"
 _TASK_RESTART_COUNT = 999
@@ -175,7 +177,7 @@ def _launch_elevated_gateway_command(command: str, extra_args: list[str] | None 
     All operator decisions are already collected in the parent shell before this point. See #54220, #56747.
     """
     _assert_windows()
-    args = ["-m", "hermes_cli.main", *_current_profile_cli_args(), "gateway", command, *(extra_args or [])]
+    args = ["-m", "hermeszooid", *_current_profile_cli_args(), "gateway", command, *(extra_args or [])]
     params = subprocess.list2cmdline(args)
     cwd = str(Path(__file__).resolve().parent.parent)
     try:
@@ -277,7 +279,7 @@ def _stable_gateway_working_dir(project_root: Path) -> str:
 
 def _gateway_run_argv(python_exe: str, profile_arg: str) -> list[str]:
     """``python -m hermes_cli.main [--profile X] gateway run`` — shared by every launcher renderer."""
-    argv = [python_exe, "-m", "hermes_cli.main"]
+    argv = [python_exe, "-m", "hermeszooid"]
     if profile_arg:
         argv.extend(profile_arg.split())
     argv.extend(["gateway", "run"])
@@ -315,7 +317,7 @@ def _build_gateway_cmd_script(python_path: str, working_dir: str, hermes_home: s
         "@echo off",
         f"rem {_TASK_DESCRIPTION}",
         f"cd /d {_quote_cmd_script_arg(working_dir)}",
-        f'set "HERMES_HOME={hermes_home}"',
+        f'set "HERMESZOOID_HOME={hermes_home}"',
         *[f'set "{k}={v}"' for k, v in _GATEWAY_ENV],
         # VIRTUAL_ENV lets the gateway's own python detection find the venv.
         f'set "VIRTUAL_ENV={_preserve_hermes_home_path(venv_dir)}"',
@@ -354,7 +356,7 @@ def _build_gateway_vbs_script(python_path: str, working_dir: str, hermes_home: s
         "Dim sh, env, existing_pp",
         'Set sh = CreateObject("WScript.Shell")',
         'Set env = sh.Environment("PROCESS")',
-        f"env.Item({q('HERMES_HOME')}) = {q(hermes_home)}",
+        f"env.Item({q('HERMESZOOID_HOME')}) = {q(hermes_home)}",
         *[f"env.Item({q(k)}) = {q(v)}" for k, v in _GATEWAY_ENV],
         f"env.Item({q('VIRTUAL_ENV')}) = {q(_preserve_hermes_home_path(venv_dir))}",
         # Mirror the cmd wrapper's ``PYTHONPATH=<static>;%PYTHONPATH%`` at runtime.

@@ -20,6 +20,12 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from hermes_cli import setup_platforms
+from hermeszooid.gateway_identity import (
+    LAUNCHD_LABEL_BASE,
+    SYSTEMD_SERVICE_BASE,
+    WINDOWS_TASK_BASE,
+    command_belongs_to_product,
+)
 
 # UV's bundled Python ships a minimal PATH; ensure launchctl/systemctl are discoverable.
 if os.name == "posix":
@@ -136,7 +142,7 @@ def _get_service_pids(all_profiles: bool = False) -> set:
 
     # --- systemd (Linux): user and system scopes ---
     if supports_systemd_services():
-        pattern = "hermes-gateway*" if all_profiles else get_service_name()
+        pattern = f"{SYSTEMD_SERVICE_BASE}*" if all_profiles else get_service_name()
         for scope_args in [["systemctl", "--user"], ["systemctl"]]:
             try:
                 # Belt-and-suspenders for the EXCLUDE use case (#74075): a bare ``launchctl list`` prefix
@@ -194,7 +200,7 @@ def _get_service_pids(all_profiles: bool = False) -> set:
                 if result.returncode == 0:
                     for line in result.stdout.strip().splitlines():
                         parts = line.split()
-                        if len(parts) >= 3 and parts[-1].startswith("ai.hermes.gateway"):
+                        if len(parts) >= 3 and parts[-1].startswith(LAUNCHD_LABEL_BASE):
                             try:
                                 pid = int(parts[0])
                                 if pid > 0:
@@ -604,7 +610,11 @@ def _scan_gateway_pids(
         matches_runtime = looks_like_gateway_command_line(command) or (
             include_restart_managers and looks_like_gateway_runtime_command_line(command)
         )
-        if matches_runtime and (all_profiles or _matches_current_profile(command)):
+        if (
+            matches_runtime
+            and command_belongs_to_product(command)
+            and (all_profiles or _matches_current_profile(command))
+        ):
             _append_unique_pid(pids, pid, exclude_pids)
 
     try:
@@ -884,7 +894,7 @@ def find_windows_gateway_services(
 
 
 def _gateway_run_args_for_profile(profile: str) -> list[str]:
-    args = [get_python_path(), "-m", "hermes_cli.main"]
+    args = [get_python_path(), "-m", "hermeszooid"]
     if profile != "default":
         args.extend(["--profile", profile])
     args.extend(["gateway", "run", "--replace"])
@@ -909,7 +919,10 @@ def _capture_gateway_argv(pid: int) -> list[str] | None:
     # Never respawn an unrelated process the scan happened to report.
     try:
         from gateway.status import looks_like_gateway_command_line
-        if not looks_like_gateway_command_line(" ".join(argv)):
+        command = " ".join(argv)
+        if not looks_like_gateway_command_line(command):
+            return None
+        if not command_belongs_to_product(command):
             return None
     except Exception:
         pass
@@ -1664,7 +1677,7 @@ def _reap_unsupervised_gateway_orphans(extra_exclude: set | None = None) -> bool
             from hermes_cli.gateway_windows import get_task_name  # profile-aware task name
             _task_name = get_task_name()
         except Exception:
-            _task_name = "Hermes_Gateway"
+            _task_name = WINDOWS_TASK_BASE
         if _windows_scheduled_task_supervises(_task_name):
             return False
 
@@ -2028,8 +2041,8 @@ def _windows_gateway_breakaway_state() -> bool | None:
 # Service Configuration
 # =============================================================================
 
-_SERVICE_BASE = "hermes-gateway"
-SERVICE_DESCRIPTION = "Hermes Agent Gateway - Messaging Platform Integration"
+_SERVICE_BASE = SYSTEMD_SERVICE_BASE
+SERVICE_DESCRIPTION = "HermesZooid Gateway - Messaging Platform Integration"
 
 _SYSTEM_UNIT_DIR = Path("/etc/systemd/system")
 
@@ -2730,7 +2743,7 @@ def get_launchd_plist_path() -> Path:
     """``~/Library/LaunchAgents/ai.hermes.gateway[-<profile>].plist`` under the real account home."""
     import pwd
     suffix = _profile_suffix()
-    name = f"ai.hermes.gateway-{suffix}" if suffix else "ai.hermes.gateway"
+    name = f"{LAUNCHD_LABEL_BASE}-{suffix}" if suffix else LAUNCHD_LABEL_BASE
     # Real account home: profile mode may point HOME at a profile dir.
     home = Path(pwd.getpwuid(os.getuid()).pw_dir)  # windows-footgun: ok — POSIX launchd (macOS) helper, never invoked on Windows
     return home / "Library" / "LaunchAgents" / f"{name}.plist"
@@ -2746,9 +2759,9 @@ def launchd_gateway_labels_for_install() -> list[str]:
     profile_labels: list[str] = []
     for profile in list_profiles():
         if profile.is_default:
-            root_label.append("ai.hermes.gateway")
+            root_label.append(LAUNCHD_LABEL_BASE)
         elif _re.match(r"^[a-z0-9][a-z0-9_-]{0,63}$", profile.name):
-            profile_labels.append(f"ai.hermes.gateway-{profile.name}")
+            profile_labels.append(f"{LAUNCHD_LABEL_BASE}-{profile.name}")
     return root_label + sorted(profile_labels)
 
 
@@ -3014,7 +3027,7 @@ Wants=network-online.target
 
 [Service]
 Type={systemd_type}
-{systemd_watchdog_directives}{identity_lines}ExecStart={python_path} -m hermes_cli.main{f" {profile_arg}" if profile_arg else ""} gateway run
+{systemd_watchdog_directives}{identity_lines}ExecStart={python_path} -m hermeszooid{f" {profile_arg}" if profile_arg else ""} gateway run
 WorkingDirectory={working_dir}
 {env_lines}Environment="PATH={sane_path}"
 Environment="VIRTUAL_ENV={venv_dir}"
@@ -3655,7 +3668,7 @@ def systemd_status(deep: bool = False, system: bool = False, full: bool = False)
 def get_launchd_label() -> str:
     """Return the launchd service label, scoped per profile."""
     suffix = _profile_suffix()
-    return f"ai.hermes.gateway-{suffix}" if suffix else "ai.hermes.gateway"
+    return f"{LAUNCHD_LABEL_BASE}-{suffix}" if suffix else LAUNCHD_LABEL_BASE
 
 
 # Cached launchd domain — probe once per process invocation.
@@ -3832,7 +3845,7 @@ def _launchd_unsupported_marker_exists() -> bool:
 
 def _gateway_run_command() -> list[str]:
     """Build ``python -m hermes_cli.main [--profile X] gateway run --replace``, honoring the active profile."""
-    return [get_python_path(), "-m", "hermes_cli.main", *_profile_arg().split(), "gateway", "run", "--replace"]
+    return [get_python_path(), "-m", "hermeszooid", *_profile_arg().split(), "gateway", "run", "--replace"]
 
 
 def _timestamped_stderr_gateway_command(error_log: Path, *, external_supervisor: bool = False) -> list[str]:
