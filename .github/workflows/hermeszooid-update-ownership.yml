@@ -1,0 +1,47 @@
+name: HermesZooid Update Ownership
+
+on:
+  pull_request:
+    paths:
+      - "hermeszooid/update_identity.py"
+      - "hermes_cli/update_cmd.py"
+      - "hermes_cli/update_cmd_git.py"
+      - "hermes_cli/banner.py"
+      - "hermes_cli/dashboard_procs.py"
+      - "hermes_cli/_scan_venv_blockers.py"
+      - "hermes_cli/update_restart_recovery.py"
+      - "hermes_cli/update_cmd_fleet.py"
+      - "apps/desktop/electron/update-remote.ts"
+      - "apps/desktop/electron/updater-process.ts"
+      - "apps/bootstrap-installer/src-tauri/src/update.rs"
+      - "tests/hermeszooid/test_update_ownership.py"
+      - ".github/workflows/hermeszooid-update-ownership.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hermeszooid-update-ownership-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ownership-contract:
+    name: Runtime updater ownership contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check pytest==9.1.1
+      - name: Run updater ownership contract
+        run: >-
+          python -m pytest
+          --confcutdir=tests/hermeszooid
+          tests/hermeszooid/test_update_ownership.py
+          -q
