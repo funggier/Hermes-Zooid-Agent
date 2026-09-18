@@ -115,6 +115,16 @@ class Evidence:
 
 
 @dataclass(frozen=True)
+class ExternalBinding:
+    step_id: str
+    executor: str
+    operation_key: str
+    external_id: str
+    created_at: str
+    updated_at: str
+
+
+@dataclass(frozen=True)
 class RecoveryResult:
     action: RecoveryAction
     ticket_id: str
@@ -167,6 +177,16 @@ CREATE TABLE IF NOT EXISTS evidence (
     criterion_index INTEGER,
     metadata_json TEXT NOT NULL,
     created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS executor_bindings (
+    step_id TEXT PRIMARY KEY REFERENCES steps(id) ON DELETE CASCADE,
+    executor TEXT NOT NULL,
+    operation_key TEXT NOT NULL UNIQUE,
+    external_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(executor, external_id)
 );
 
 CREATE TABLE IF NOT EXISTS events (
@@ -615,6 +635,47 @@ class CogentNexusStore:
             self._checkpoint(step.ticket_id, step_id=step_id, phase="step_done", event_seq=seq)
             return self.get_step(step_id)
 
+    def block_step(
+        self,
+        step_id: str,
+        *,
+        reason: str,
+        op_key: Optional[str] = None,
+    ) -> Step:
+        reason = reason.strip()
+        if not reason:
+            raise ValueError("block reason must not be empty")
+        with self._txn():
+            prior = self._event_for_op(op_key, "step_blocked")
+            if prior is not None:
+                return self.get_step(self._event_payload(prior)["step_id"])
+            step = self.get_step(step_id)
+            if step.state is StepState.BLOCKED:
+                return step
+            if step.state not in {StepState.RUNNING, StepState.VERIFY}:
+                raise StateTransitionError(
+                    f"step {step_id} is {step.state.value}, not blockable"
+                )
+            now = self._now()
+            self.conn.execute(
+                "UPDATE steps SET state = ?, summary = ? WHERE id = ?",
+                (StepState.BLOCKED.value, reason, step_id),
+            )
+            self.conn.execute(
+                "UPDATE tickets SET state = ?, updated_at = ? WHERE id = ?",
+                (TicketState.BLOCKED.value, now, step.ticket_id),
+            )
+            seq = self._record_event(
+                aggregate_type="step",
+                aggregate_id=step_id,
+                ticket_id=step.ticket_id,
+                kind="step_blocked",
+                payload={"step_id": step_id, "reason": reason},
+                op_key=op_key,
+            )
+            self._checkpoint(step.ticket_id, step_id=step_id, phase="step_blocked", event_seq=seq)
+            return self.get_step(step_id)
+
     def _missing_acceptance_criteria(self, ticket: Ticket) -> list[int]:
         if not ticket.acceptance_criteria:
             return []
@@ -905,6 +966,91 @@ class CogentNexusStore:
             )
             self._checkpoint(step.ticket_id, step_id=step_id, phase=phase, event_seq=seq)
             return self.get_step(step_id)
+
+    def bind_external(
+        self,
+        step_id: str,
+        *,
+        executor: str,
+        operation_key: str,
+        external_id: str,
+    ) -> ExternalBinding:
+        executor = executor.strip()
+        operation_key = operation_key.strip()
+        external_id = external_id.strip()
+        if not executor or not operation_key or not external_id:
+            raise ValueError("executor, operation_key, and external_id must not be empty")
+        with self._txn():
+            step = self.get_step(step_id)
+            existing = self.conn.execute(
+                "SELECT * FROM executor_bindings WHERE step_id = ?",
+                (step_id,),
+            ).fetchone()
+            if existing is not None:
+                binding = self._external_binding_from_row(existing)
+                expected = (executor, operation_key, external_id)
+                actual = (binding.executor, binding.operation_key, binding.external_id)
+                if actual != expected:
+                    raise StateTransitionError(
+                        f"step {step_id} is already bound to a different external execution"
+                    )
+                return binding
+
+            by_key = self.conn.execute(
+                "SELECT step_id FROM executor_bindings WHERE operation_key = ?",
+                (operation_key,),
+            ).fetchone()
+            if by_key is not None:
+                raise StateTransitionError(
+                    f"operation_key {operation_key!r} is already bound to step {by_key['step_id']}"
+                )
+            now = self._now()
+            self.conn.execute(
+                """
+                INSERT INTO executor_bindings(
+                    step_id, executor, operation_key, external_id, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (step_id, executor, operation_key, external_id, now, now),
+            )
+            seq = self._record_event(
+                aggregate_type="step",
+                aggregate_id=step_id,
+                ticket_id=step.ticket_id,
+                kind="external_bound",
+                payload={
+                    "step_id": step_id,
+                    "executor": executor,
+                    "operation_key": operation_key,
+                    "external_id": external_id,
+                },
+                op_key=None,
+            )
+            self._checkpoint(
+                step.ticket_id,
+                step_id=step_id,
+                phase="external_bound",
+                event_seq=seq,
+            )
+            return self.get_external_binding(step_id)
+
+    @staticmethod
+    def _external_binding_from_row(row: sqlite3.Row) -> ExternalBinding:
+        return ExternalBinding(
+            step_id=row["step_id"],
+            executor=row["executor"],
+            operation_key=row["operation_key"],
+            external_id=row["external_id"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
+
+    def get_external_binding(self, step_id: str) -> Optional[ExternalBinding]:
+        row = self.conn.execute(
+            "SELECT * FROM executor_bindings WHERE step_id = ?",
+            (step_id,),
+        ).fetchone()
+        return self._external_binding_from_row(row) if row is not None else None
 
     def get_project(self, project_id: str) -> Project:
         row = self.conn.execute("SELECT * FROM projects WHERE id = ?", (project_id,)).fetchone()
