@@ -1,31 +1,47 @@
 # Zooid Development Workspace
 
-This directory is the Zooid-owned development and planning layer kept separate from the
-Hermes upstream source tree.
+This directory is the Zooid-owned planning, coordination, task history and architecture layer,
+kept separate from the inherited Hermes source/documentation tree.
 
 **Repository:** `funggier/Hermes-Zooid-Agent`
 **Working branch:** `agent/zooid-independence`
 **Upstream source:** `NousResearch/hermes-agent`
-**Current synchronized upstream baseline:** `01382698fc32ec7740b6a204d9b7a6abeac74d33`
+**Synchronized upstream baseline:** `01382698fc32ec7740b6a204d9b7a6abeac74d33`
 
-The fork's `main` branch is intentionally kept as a clean upstream mirror. Zooid-specific
-planning, coordination, reports, and product changes belong on Zooid branches.
+Fork `main` is kept as a clean upstream mirror. Zooid-specific product work belongs on Zooid
+branches.
 
-## Start here
+## New-session start here
 
-1. Read [AGENTS.md](AGENTS.md).
-2. Read [UPSTREAM-BASELINE.md](UPSTREAM-BASELINE.md).
-3. Read [coordination/ACTIVE.md](coordination/ACTIVE.md) and [coordination/STATUS.md](coordination/STATUS.md).
-4. Read the active architecture plan:
-   [minimal CogentNexus runtime](plans/minimal-cogentnexus-runtime.md).
-5. Use [roadmap.md](roadmap.md) as the broader durable development direction.
-6. Treat [plans/product-independence.md](plans/product-independence.md) as historical audit
-   evidence and refresh source ownership when an active task reaches that surface.
+1. [AGENTS.md](AGENTS.md)
+2. [coordination/SESSION-HANDOFF.md](coordination/SESSION-HANDOFF.md)
+3. [coordination/ACTIVE.md](coordination/ACTIVE.md)
+4. the numbered active task linked by ACTIVE
+5. [coordination/STATUS.md](coordination/STATUS.md)
+6. [tasks/README.md](tasks/README.md) when historical sequence is needed
+
+## Durable task history
+
+Development tasks are numbered monotonically:
+
+`001`, `002`, `003`, ...
+
+Numbers are never reused, including for BLOCKED/CANCELLED/SUPERSEDED work.
+
+This makes repository state sufficient to reconstruct what happened, why it happened, what
+evidence existed, where work stopped and what should happen next without depending on chat
+history.
 
 ## Current architecture direction
 
-CogentNexus semantic state is being built as a Zooid-owned durable kernel.
-Hermes/Kanban will be used as the first execution substrate where appropriate rather than
-duplicating its mature claim/heartbeat/worker scheduler.
+CogentNexus owns semantic durable truth.
 
-Git history remains authoritative for the original September 6 planning snapshot.
+Hermes/Kanban is being reused as the first execution substrate rather than duplicating its
+mature queue/claim/heartbeat/worker mechanics.
+
+See:
+
+- [minimal CogentNexus runtime](plans/minimal-cogentnexus-runtime.md)
+- [Task 004 — Hermes Kanban Executor Integration](tasks/004-hermes-kanban-executor-integration.md)
+
+Git history remains authoritative for earlier snapshots.

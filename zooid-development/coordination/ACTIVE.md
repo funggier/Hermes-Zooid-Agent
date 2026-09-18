@@ -1,47 +1,38 @@
 # Active Work
 
 - Project state: ACTIVE
-- Task ID: cnx-minimal-runtime-vertical-slice
-- Task state: VALIDATION
+- Active Task: `004-hermes-kanban-executor-integration`
+- Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Working branch: `agent/zooid-independence`
 - Current upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- RED contract commit: `3e4d180defc3d3ecac0a1626f78f18204f5ad460`
-- Implementation commit: `e63610eab12a7c8cb2f12dd9f373bcb9fa492d97`
+- Last GREEN production-code checkpoint:
+  `59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`
 
-## Current task
+## Active task
 
-Validate the first durable CogentNexus vertical slice.
+[Task 004 — Hermes Kanban Executor Integration](../tasks/004-hermes-kanban-executor-integration.md)
 
-Implemented scope:
+Goal: bind the GREEN generic CogentNexus execution bridge to current Hermes Kanban while keeping
+Zooid writable state isolated from live Hermes.
 
-- Zooid-owned SQLite persistence under `ZOOID_HOME`;
-- Project / Ticket / ordered Step state;
-- risk, uncertainty and acceptance criteria;
-- Evidence and acceptance gate;
-- append-only semantic events;
-- durable checkpoints;
-- optional idempotency keys;
-- conservative restart recovery: RUNNING -> VERIFY, never implicit replay;
-- module CLI through `python -m zooid_cnx`.
+## Immediate next action
 
-Design: [minimal-cogentnexus-runtime](../plans/minimal-cogentnexus-runtime.md)
+Write RED adapter tests against a temporary real Hermes Kanban DB, then implement the minimum
+`HermesKanbanExecutor` needed to make the contract GREEN.
 
-## Validation state
+Do not launch a real provider worker until the source-level adapter is GREEN.
 
-- Baseline CI before production work: PASS.
-- Docker workflow on implementation commit: PASS.
-- Full CI / Nix on implementation commit: RUNNING at this checkpoint.
-- Local checkout is unavailable in the current ChatGPT container because public DNS for github.com
-  is unavailable; this is an environment limitation, not repository evidence.
-- GitHub Actions remains authoritative.
+## Resume rule
 
-## Next actions
+For a new session, read [SESSION-HANDOFF.md](SESSION-HANDOFF.md) first.
 
-1. Finish GitHub CI validation for the implementation commit.
-2. Repair any failing contract/lint without widening scope.
-3. When GREEN, checkpoint the minimal kernel as the first executable CogentNexus milestone.
-4. Open the next task for the Hermes/Kanban execution adapter.
-5. Continue the broader product-independence audit in parallel only where the adapter needs it.
+Task numbering is monotonic. The next new task after this one is 005; never reuse an old number.
 
-Keep fork `main` clean; Zooid implementation remains on this branch or descendants.
+## Boundaries
+
+- no force push;
+- keep `main` a clean upstream mirror;
+- no live Hermes/OpenClaw lifecycle mutation during this source-level task;
+- no implicit replay of uncertain side effects;
+- GitHub repository/actions are authoritative.
