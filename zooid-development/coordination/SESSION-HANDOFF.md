@@ -2,84 +2,60 @@
 
 Updated: 2026-09-18
 
-Read this first when a new session resumes Zooid work.
-
 ## Repository
 
 - Repo: `funggier/Hermes-Zooid-Agent`
-- Clean upstream branch: `main`
+- Clean upstream: `main`
 - Zooid branch: `agent/zooid-independence`
-- Hermes upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
+- Upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
 - Last GREEN code SHA before this documentation checkpoint:
-  `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
-- PR #1 remains draft.
+  `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- PR #1: draft
 
-Always verify current GitHub HEAD and Actions before trusting cached SHA/status.
+Verify current GitHub HEAD/Actions before acting.
 
 ## Read order
 
 1. `zooid-development/AGENTS.md`
 2. this file
-3. `zooid-development/coordination/ACTIVE.md`
-4. `zooid-development/tasks/005-hermes-dispatcher-lifecycle-integration.md`
-5. `zooid-development/coordination/STATUS.md`
-6. task index/history only as needed
+3. `coordination/ACTIVE.md`
+4. `tasks/006-zooid-dispatcher-process-boundary.md`
+5. `coordination/STATUS.md`
+6. earlier numbered task only when rationale is needed
 
-## Completed foundation
+## Completed
 
-### Task 001
+001 — upstream synchronization/planning isolation — DONE.
 
-DONE. Fork synchronized and Zooid development layer isolated.
+002 — durable CogentNexus kernel — DONE / GREEN.
 
-### Task 002
+003 — executor-neutral bridge — DONE / GREEN.
 
-DONE / GREEN. Durable CogentNexus kernel:
-Project, Ticket, Step, Evidence, Events, Checkpoints, idempotency and conservative recovery.
+004 — concrete Hermes Kanban executor — DONE / GREEN.
 
-### Task 003
+005 — real Hermes dispatcher lifecycle — DONE / GREEN.
 
-DONE / GREEN. Generic ExecutionCoordinator + replaceable ExecutorPort + durable external binding.
+Task 005 final proof:
+- SHA `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- Zooid workflow `35355516901` — SUCCESS
+- Docker SUCCESS
 
-### Task 004
+It proves:
+CogentNexus card creation, assignment, absolute Zooid workspace, real Hermes claim/run/PID
+bookkeeping, RUNNING inspection, structured completion evidence and final Ticket DONE.
 
-DONE / GREEN. Concrete `HermesKanbanExecutor`.
+## Active — Task 006
 
-Final validation:
+Create a dedicated dispatcher process boundary.
 
-- SHA `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
-- Zooid workflow `35354752792` — SUCCESS
-
-Important Task 004 decisions:
-
-- Kanban writable state belongs under `ZOOID_HOME`.
-- Hermes `done` does not imply CogentNexus acceptance.
-- Evidence must arrive through `metadata.cogentnexus_evidence`.
-- operation-key search is conservative across archived cards.
-- dedicated Zooid board initialization uses Hermes base schema plus migration pass.
-
-## Active work — Task 005
-
-Prove the real dispatcher lifecycle around a CogentNexus-created Kanban card using an injected
-spawn function before any provider/model call.
-
-Target:
-
-`READY -> claim -> Zooid workspace -> spawn -> RUNNING -> structured completion -> CogentNexus DONE`
-
-Current Hermes exposes `dispatch_once(..., spawn_fn=...)`, making this separation possible.
+Reason: parent-process environment mutation would be unsafe for future concurrent Projects and
+sessions. Zooid should spawn a child with fixed Kanban paths instead.
 
 ## Immediate next action
 
-Add and run the dispatcher lifecycle contract. Prefer existing Hermes mechanics and the narrowest
-possible adapter changes.
+Audit current Hermes dispatcher daemon/CLI entrypoints and implement RED tests for:
+parent env unchanged + child receives Zooid env + same board visible + deterministic stop/restart.
 
-## Safety boundaries
+## Safety
 
-- do not use live `~/.hermes`;
-- do not call a real provider yet;
-- do not force push;
-- do not mutate live Hermes/OpenClaw;
-- do not weaken evidence gating;
-- do not retry uncertain side effects automatically.
-
-If interrupted, resume from GitHub evidence, not chat memory.
+No real provider/model call yet. No live Hermes/OpenClaw mutation. No force push.

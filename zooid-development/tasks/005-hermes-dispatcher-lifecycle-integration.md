@@ -1,109 +1,115 @@
 # Task 005 — Hermes Dispatcher Lifecycle Integration
 
 - Task ID: `005-hermes-dispatcher-lifecycle-integration`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 004
-- Starting GREEN SHA: `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- RED commit: `2a7131b8e16fa0a53cb4e4a152894faa39997019`
+- Production repair: `9aee6577c87ef509ba4f33559ab0dbe2f1d745e0`
+- Final tested SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- Authoritative Zooid workflow: `35355516901` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-Task 004 proved that CogentNexus can create and reconcile a real Hermes Kanban card, but it did
-not prove the dispatcher side of the lifecycle.
+Task 004 proved that CogentNexus could create, find and reconcile a real Hermes Kanban card.
+It did not prove that current Hermes dispatcher mechanics could actually consume that card.
 
-Before allowing a real provider/model worker, Zooid must verify that a card created by
-CogentNexus can be consumed by current Hermes dispatcher mechanics without escaping Zooid-owned
-storage.
+Before any real model/provider worker is allowed, the infrastructure boundary had to prove:
 
-The next proof boundary is:
+`READY -> claim -> workspace -> spawn -> RUNNING -> completion evidence -> CogentNexus DONE`
 
-`READY -> claim -> workspace -> spawn callback -> RUNNING`
+without mixing provider/network failures into the result.
 
-using the real current Kanban dispatcher and an injected spawn function that does not launch a
-provider.
+## Contract
 
-## Goal
+The test uses:
 
-Qualify one complete infrastructure-only lifecycle:
-
-1. CogentNexus creates Ticket/Step.
-2. ExecutionCoordinator dispatches it to HermesKanbanExecutor.
-3. Real Hermes dispatcher claims the Kanban card.
-4. Workspace resolves beneath Zooid-owned storage.
-5. Dispatcher calls the injected spawn function exactly once.
-6. PID/run/claim state is durably visible.
-7. HermesKanbanExecutor reports RUNNING.
-8. Simulated worker completion with structured evidence returns through CogentNexus to DONE.
-
-## Why use an injected spawn function first
-
-Current Hermes `dispatch_once` supports `spawn_fn`.
-
-This lets the project test dispatcher queue/claim/workspace/run bookkeeping separately from:
-
-- provider credentials;
-- model availability;
-- quotas;
-- network;
-- real worker subprocess behavior.
-
-A failure here is therefore an execution-plumbing problem, not a provider problem.
-
-## Safety / architecture constraints
-
-- Never point the test at live `~/.hermes`.
-- Workspace must be under Zooid-owned/temp storage.
-- Do not mutate process-global HERMES environment as a production API.
-- Do not introduce a second scheduler.
-- Do not interpret dispatcher spawn as semantic completion.
-- CogentNexus acceptance remains evidence-gated.
-- Real provider execution is deferred until this lifecycle is GREEN.
-
-## Planned validation
-
-Use:
-
+- real CogentNexus Project/Ticket/Step state;
 - real `HermesKanbanExecutor`;
-- real Hermes Kanban domain functions;
-- real dispatcher claim/workspace/run logic;
-- injected spawn callback only.
+- real current Hermes claim/run/workspace/PID/event bookkeeping;
+- real `complete_task`;
+- an injected spawn callback instead of a model process.
 
-The test should record:
+Only profile availability and process fingerprinting for the deliberately fake PID are isolated.
 
-- task ID;
-- assignee;
-- resolved workspace;
-- board identity;
-- synthetic PID;
-- Kanban status/current_run_id/worker_pid;
-- CogentNexus external binding;
-- final evidence and Ticket status.
+## RED
 
-## Expected implementation impact
+Commit:
 
-Prefer no new scheduler code.
+`2a7131b8e16fa0a53cb4e4a152894faa39997019`
 
-Small adapter changes are allowed only if needed to make storage/workspace ownership explicit and
-restart-safe.
+Workflow:
 
-If current Hermes public dispatcher API cannot be used without hidden global path resolution,
-record the exact reason and add the narrowest safe Zooid integration layer instead of mutating
-global environment.
+`35355192806` — FAILURE
 
-## Acceptance
+13 existing CogentNexus tests passed. The new lifecycle contract failed immediately because
+`HermesKanbanExecutor` did not yet accept an assignee.
 
-Task 005 is DONE when:
+This identified a real production gap: a dispatcher card must have explicit routing ownership.
 
-1. one real dispatcher lifecycle test is GREEN;
-2. the dispatcher claims exactly the intended CogentNexus-created card;
-3. exactly one spawn callback occurs;
-4. workspace resolves under Zooid-owned/temp storage;
-5. task becomes RUNNING with durable run identity;
-6. adapter inspection reports RUNNING;
-7. structured completion evidence flows back to CogentNexus DONE;
-8. no live Hermes board/profile/provider was modified;
-9. exact SHA/run evidence is recorded here and in coordination files.
+## Production repair
 
-## Immediate next action
+Commit:
 
-Add the dispatcher lifecycle contract and run it against the current Hermes implementation.
+`9aee6577c87ef509ba4f33559ab0dbe2f1d745e0`
+
+Changes:
+
+- add optional executor `assignee`;
+- pass the assignee to real Hermes `create_task`;
+- persist an absolute scratch `workspace_path` immediately after card creation;
+- workspace path is `<Zooid workspaces root>/<task_id>`;
+- no process-global HERMES environment mutation is required.
+
+This is important for future multi-session correctness: concurrent Zooid execution must not race
+on temporary process-wide path overrides.
+
+## Harness correction
+
+The first post-repair run reached real dispatcher claim/workspace handling but did not report a
+spawn. The injected spawn callback returns a synthetic PID (`4242`), while Hermes normally
+fingerprints a real host process after spawn.
+
+The test therefore stubs only `_process_fingerprint` for the nonexistent synthetic PID. It
+does not stub claim, run creation, workspace resolution, PID persistence, events or completion.
+
+Final harness commit:
+
+`e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+
+## GREEN
+
+Zooid workflow:
+
+`35355516901` — SUCCESS.
+
+The final contract proves:
+
+1. CogentNexus creates the intended real Kanban card.
+2. The card is READY and assigned.
+3. Workspace is an absolute Zooid-owned path.
+4. Real Hermes dispatcher claims exactly that card.
+5. Real run identity is created.
+6. The spawn callback is invoked once.
+7. Worker PID bookkeeping is persisted.
+8. Adapter inspection reports RUNNING.
+9. Real Hermes completion records structured CogentNexus evidence.
+10. ExecutionCoordinator consumes that evidence.
+11. Ticket reaches DONE through the CogentNexus acceptance gate.
+
+Docker workflow on the same tested SHA also completed successfully.
+
+Inherited upstream CI/Nix may remain queued because this fork does not own NousResearch's
+large-runner infrastructure.
+
+## Result
+
+PASS.
+
+The executor plumbing up to the worker-process boundary is now proven.
+
+## Follow-up
+
+Task 006 creates an owned dispatcher process boundary so Zooid can run the Hermes dispatcher
+with Zooid-specific environment/state without mutating the parent process environment.

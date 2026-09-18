@@ -1,36 +1,35 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `005-hermes-dispatcher-lifecycle-integration`
+- Active Task: `006-zooid-dispatcher-process-boundary`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Working branch: `agent/zooid-independence`
-- Hermes upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- Last GREEN code SHA: `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
-- Last GREEN Zooid workflow run: `35354752792`
+- Upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
+- Last GREEN code SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- Last GREEN Zooid run: `35355516901`
 
 ## Active task
 
-[Task 005 — Hermes Dispatcher Lifecycle Integration](../tasks/005-hermes-dispatcher-lifecycle-integration.md)
+[Task 006 — Zooid Dispatcher Process Boundary](../tasks/006-zooid-dispatcher-process-boundary.md)
 
 ## Immediate next action
 
-Add an isolated dispatcher lifecycle test using current Hermes dispatcher mechanics and an
-injected spawn function. Prove ready -> claim -> Zooid workspace -> running -> evidence -> DONE
-before any real provider/model worker is launched.
+Audit current Hermes dispatcher daemon/CLI entrypoints, then write RED tests for an isolated
+child process whose Kanban environment is fixed at spawn and whose parent environment is
+unchanged.
 
 ## Resume rule
 
-Read [SESSION-HANDOFF.md](SESSION-HANDOFF.md) first in a new session.
+Read `SESSION-HANDOFF.md` first.
 
-The next new task number after Task 005 is 006. Never reuse prior numbers.
+Next unused task ID after this task is 007.
 
 ## Boundaries
 
 - no force push;
-- keep `main` as clean upstream mirror;
-- no live Hermes/OpenClaw lifecycle mutation;
-- no live provider call yet;
-- no process-global path mutation as a production design;
-- no implicit side-effect replay;
-- GitHub repository/actions are authoritative.
+- keep main as clean upstream mirror;
+- no live Hermes/OpenClaw mutation;
+- no real provider/model call yet;
+- no parent-process HERMES_KANBAN_* mutation;
+- evidence gating remains authoritative.

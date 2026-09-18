@@ -2,62 +2,36 @@
 
 **Project: ACTIVE**
 
-Current active task:
-
-[005 — Hermes Dispatcher Lifecycle Integration](../tasks/005-hermes-dispatcher-lifecycle-integration.md)
+Current task:
+[006 — Zooid Dispatcher Process Boundary](../tasks/006-zooid-dispatcher-process-boundary.md)
 
 | Task | State | Result |
 | --- | --- | --- |
-| 001 | DONE | Current upstream baseline + Zooid planning isolation |
-| 002 | DONE / GREEN | Durable CogentNexus semantic kernel |
-| 003 | DONE / GREEN | Executor-neutral external execution bridge |
-| 004 | DONE / GREEN | Concrete real Hermes Kanban executor |
-| 005 | ACTIVE | Dispatcher lifecycle qualification |
+| 001 | DONE | Current Hermes baseline + Zooid planning isolation |
+| 002 | DONE / GREEN | Durable CogentNexus kernel |
+| 003 | DONE / GREEN | Executor-neutral execution bridge |
+| 004 | DONE / GREEN | Concrete Hermes Kanban executor |
+| 005 | DONE / GREEN | Real dispatcher claim/workspace/run lifecycle |
+| 006 | ACTIVE | Dedicated dispatcher process boundary |
 
-## Current working capabilities
+## Proven capability
 
-CogentNexus now has:
+The repository now proves:
 
-- Project / Ticket / ordered Step;
-- risk and uncertainty;
-- acceptance criteria;
-- Evidence, semantic Events and Checkpoints;
-- idempotent transitions;
-- conservative RUNNING -> VERIFY recovery;
-- durable generic external bindings;
-- replaceable ExecutorPort;
-- real Hermes Kanban executor;
-- Zooid-owned Kanban DB/workspace/attachment environment;
-- structured Kanban-to-CogentNexus evidence contract.
+`CogentNexus Ticket -> Step -> real Kanban card -> real Hermes dispatcher claim -> Zooid workspace -> RUNNING -> structured Evidence -> Ticket DONE`
 
-## Latest validation
+The worker process itself was represented by an injected spawn callback in Task 005. Provider
+execution has not yet been claimed as working.
 
-Task 004 final tested SHA:
+## Latest evidence
 
-`68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- Tested SHA: `e37b3d1b21e9446683b83f2eae311ff4160c46fb`
+- Zooid workflow: `35355516901` — SUCCESS
+- Docker: SUCCESS
 
-Zooid workflow run:
+## Current gap
 
-`35354752792` — SUCCESS.
+Dispatcher mechanics are proven in-process. Zooid still needs a process-owned runtime boundary
+so Kanban location/environment is isolated without process-global mutation.
 
-Task 004 failure history is preserved in its task file rather than erased.
-
-## Current boundary
-
-Creating/reconciling real Kanban cards is GREEN.
-
-The next missing proof is dispatcher execution lifecycle. No claim is yet made that a real
-Hermes worker/provider can execute a CogentNexus Step end-to-end.
-
-## Deferred after Task 005
-
-- bounded real worker/provider acceptance;
-- provider/router abstraction;
-- autonomous Goal decomposition;
-- context budgeting/compression;
-- multi-session worker/reviewer topology;
-- single-model fairness/preemption scheduler;
-- Project escalation / Group;
-- full product identity/runtime separation;
-- coexistence qualification;
-- Zooid-owned update/release path.
+After Task 006, a bounded real worker/provider acceptance task can be opened.

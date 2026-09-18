@@ -1,54 +1,33 @@
 # Work Log
 
-Append chronologically. Never erase failed attempts. Numbered tasks contain the detailed record.
+Chronological compact log. Detailed history lives in numbered tasks.
 
 ## 2026-09-18 — Task 001 DONE
-
-Synchronized Hermes upstream and isolated Zooid planning/development state.
+Synced current Hermes upstream and isolated Zooid planning.
 
 ## 2026-09-18 — Task 002 DONE / GREEN
-
-Built durable CogentNexus semantic kernel. Final kernel GREEN checkpoint:
-`e29010b62e08d3a78872c2bf16ce0d6428ae3b58`.
+Durable CogentNexus kernel.
 
 ## 2026-09-18 — Task 003 DONE / GREEN
-
-Built generic external execution bridge.
-Implementation: `59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`.
-Workflow `35352550001`: SUCCESS.
-
-## 2026-09-18 — Task 004 RED
-
-RED commit: `c579a04e3576ab907a309ab2926e6660320e7176`.
-Expected concrete Hermes Kanban executor did not exist.
-
-## 2026-09-18 — Task 004 implementation + failure 1
-
-Implementation: `7ae990ad3ceebbf3ea266c9ec5a72d2fab3ae699`.
-Workflow `35354296118`: FAILURE.
-Cause: public Hermes Kanban connector imported unrelated full runtime/provider state.
-
-## 2026-09-18 — Task 004 failure 2
-
-Isolation repair: `946aeda8e208ae9773cf2f00e3d0ceaced425a3c`.
-Workflow `35354683506`: FAILURE.
-Cause: Hermes base SCHEMA_SQL requires its separate migration pass for current columns.
+Generic external execution bridge. Workflow `35352550001` SUCCESS.
 
 ## 2026-09-18 — Task 004 DONE / GREEN
+Real Hermes Kanban executor. Final SHA `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`.
+Workflow `35354752792` SUCCESS.
 
-Migration repair/final tested SHA:
-`68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`.
+## 2026-09-18 — Task 005 RED
+Commit `2a7131b8e16fa0a53cb4e4a152894faa39997019`.
+Workflow `35355192806` FAILURE: adapter lacked explicit assignee contract.
 
-Zooid workflow `35354752792`: SUCCESS.
+## 2026-09-18 — Task 005 production repair
+Commit `9aee6577c87ef509ba4f33559ab0dbe2f1d745e0`.
+Added assignee and persisted absolute Zooid workspace.
 
-Result: concrete real Hermes Kanban executor, Zooid-owned storage, structured evidence and
-end-to-end CogentNexus acceptance contract are GREEN.
+## 2026-09-18 — Task 005 GREEN
+Final test harness commit `e37b3d1b21e9446683b83f2eae311ff4160c46fb`.
+Synthetic PID fingerprint isolated; real Hermes dispatcher lifecycle remained under test.
+Zooid workflow `35355516901` SUCCESS. Docker SUCCESS.
 
-## 2026-09-18 — Task 005 ACTIVE
-
-Opened dispatcher lifecycle qualification.
-
-Reason: Kanban adapter is GREEN, but real dispatcher claim/workspace/spawn bookkeeping has not
-yet been proven for CogentNexus-created cards.
-
-Next: real dispatcher mechanics + injected non-provider spawn function.
+## 2026-09-18 — Task 006 ACTIVE
+Opened dedicated dispatcher process boundary to eliminate parent-process Kanban env races before
+real worker/provider acceptance.
