@@ -9,27 +9,28 @@ Bare `zooid` is reserved for the separate Zooid project.
 
 ## Completed
 
-Tasks 009–013 are DONE/GREEN:
+Tasks 009–014 are DONE/GREEN:
 - package/CLI/home;
 - Windows installer;
-- Electron Desktop;
-- Tauri bootstrap setup;
-- gateway service/process ownership and friendly-fire fence.
+- Desktop;
+- bootstrap setup;
+- gateway service/process ownership;
+- fixed listener/default-port coexistence.
 
-Latest qualified SHA before this documentation checkpoint: `496277bdeb13283c7a573675d7b678fa68e96c31`.
+Latest qualified SHA before this docs checkpoint: `a9ecb4a1a27d9d971ac9114dad137e73c37863f2`.
 
 ## Active
 
-Task 014 — Listener and Port Coexistence.
+Task 015 — Update Ownership and Upstream Isolation.
 
-Do not guess or change one gateway port in isolation. First inventory every local port-binding adapter/default and shared-ingress relationship.
+Primary safety target: `hermeszooid update` must never fetch/replace from NousResearch Hermes by default or clean/restart the existing Hermes installation.
 
 ## Resume order
 
 1. `zooid-development/AGENTS.md`
 2. this file
 3. `coordination/ACTIVE.md`
-4. `tasks/014-hermeszooid-listener-port-coexistence.md`
+4. `tasks/015-hermeszooid-update-ownership-upstream-isolation.md`
 5. `coordination/STATUS.md`
 
 ## Safety

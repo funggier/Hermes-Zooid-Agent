@@ -1,70 +1,82 @@
 # Task 014 — HermesZooid Listener and Port Coexistence
 
 - Task ID: `014-hermeszooid-listener-port-coexistence`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-19
+- Completed: 2026-09-19
 - Depends on: Task 013
-- Starting GREEN SHA: `496277bdeb13283c7a573675d7b678fa68e96c31`
+- Inventory commit: `d7ec3af623d27caca9df9541148044b255cec281`
+- RED commit: `086c28416632bbd49dc2edafee164bbc3c234cd4`
+- Production repair: `a9ecb4a1a27d9d971ac9114dad137e73c37863f2`
+- Listener Port workflow: `35378978839` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-Gateway process/service ownership is now isolated, but two independently running products can still collide if they bind the same localhost/default listener ports.
+Even with package/process/service identities isolated, two products cannot safely coexist if their default listeners bind the same TCP ports.
+Hermes has multiple independent inbound listeners, so changing one gateway port would have been incomplete.
 
-Hermes contains multiple port-binding surfaces, not one gateway port. Changing a single number would be incomplete and unsafe.
+## Source inventory
 
-Known surfaces already identified include:
-- OpenAI-compatible API server (`API_SERVER_PORT`, inherited default 8642);
-- generic webhook listener (`WEBHOOK_PORT`);
-- Microsoft Graph webhook (`MSGRAPH_WEBHOOK_PORT`);
-- WhatsApp Cloud webhook host/port;
-- WeCom callback listener (inherited default 8645);
-- BlueBubbles webhook listener (inherited default 8645);
-- Feishu webhook mode;
-- other port-binding platform adapters routed through shared ingress/multiplexing.
+Inventory report:
+`zooid-development/reports/task-014-listener-port-inventory.md`
 
-## Goal
+The inventory covered all built-in `PORT_BINDING_PLATFORM_VALUES`, shared-ingress behavior, and the browser dashboard endpoint before any code change.
 
-Create one authoritative HermesZooid listener-default policy and prove that a default HermesZooid runtime can coexist with a default Hermes runtime on the same host without bind collisions.
+## RED
 
-Explicit user-configured ports must still be honored. The product policy changes defaults, not operator intent.
+`086c28416632bbd49dc2edafee164bbc3c234cd4` defined a stdlib-only coexistence contract.
+Workflow `35378763841` failed exactly because `hermeszooid.listener_defaults` did not yet exist.
 
-## Required inventory before implementation
+## Production design
 
-1. enumerate `PORT_BINDING_PLATFORM_VALUES` and conditional bind modes;
-2. trace every default host/port constant or environment fallback used by those adapters;
-3. identify which adapters share the default-profile listener under multiplexing;
-4. distinguish fixed local product endpoints from external callback configuration;
-5. identify Desktop/dashboard/local control endpoints outside platform adapters;
-6. document all inherited Hermes default numbers before assigning HermesZooid defaults.
+Added one product authority:
+`hermeszooid/listener_defaults.py`
 
-## Design constraints
+Explicit config/environment values retain their inherited precedence. Only fallback defaults changed.
 
-- no bare `zooid` env names or ports;
-- do not alter explicit user-supplied ports;
-- centralize HermesZooid defaults instead of scattering replacement literals;
-- occupied default ports must fail clearly or use a deliberately designed fallback; never silently attach to another product;
-- shared-ingress semantics must remain intact;
-- no claim of coexistence until two listeners are bound simultaneously in a test.
+Qualified HermesZooid defaults:
 
-## TDD acceptance
+| Surface | Hermes | HermesZooid |
+| --- | ---: | ---: |
+| API server | 8642 | 18642 |
+| Generic webhook | 8644 | 18644 |
+| BlueBubbles | 8645 | 18645 |
+| Microsoft Graph | 8646 | 18646 |
+| WeCom callback | 8645 | 18647 |
+| LINE | 8646 | 18648 |
+| WhatsApp Cloud | 8090 | 18090 |
+| SMS | 8080 | 18080 |
+| Feishu webhook | 8765 | 18765 |
+| Teams | 3978 | 13978 |
+| Browser dashboard/serve default | 9119 | 19119 |
 
-RED first after inventory. Prove at minimum:
-1. an authoritative product listener-default module exists;
-2. HermesZooid API server default differs from inherited Hermes 8642;
-3. every inherited fixed callback/webhook default that can bind locally is accounted for;
-4. env/config explicit overrides win over product defaults;
-5. two loopback API listeners using Hermes and HermesZooid defaults bind simultaneously;
-6. representative shared/webhook listeners can coexist at their defaults;
-7. an explicitly occupied requested port produces a clear bind failure rather than targeting/reusing Hermes;
-8. no product default uses a bare Zooid namespace.
+Every independently bindable HermesZooid fallback is unique.
 
-## Out of scope
+Electron Desktop remains `serve --port 0`, so its private backend continues to use an OS-assigned ephemeral port.
 
-- external bot-token/provider identity conflicts;
-- program updater disablement;
-- reset/uninstall/install-over destructive tests;
-- live provider acceptance.
+Secondary multiplex profiles remain shared-ingress applications and do not bind their standalone fallback ports.
 
-## Immediate next action
+## GREEN
 
-Build and commit a source-derived listener/port inventory, then define the RED contract from that inventory before changing defaults.
+Listener Port workflow `35378978839` — SUCCESS.
+
+Focused regressions on the same SHA:
+- Gateway Identity `35378978847` — SUCCESS;
+- Windows Installer Identity `35378978906` — SUCCESS;
+- HermesZooid Identity `35378978926` — SUCCESS;
+- Desktop Identity `35378978849` — SUCCESS;
+- Bootstrap Setup Identity `35378978825` — SUCCESS;
+- CogentNexus Kernel `35378978840` — SUCCESS;
+- Docker `35378978899` — SUCCESS.
+
+The coexistence contract includes real simultaneous loopback socket binds for inherited Hermes and HermesZooid API/webhook defaults.
+
+## Result
+
+PASS.
+
+Default listener allocation is now separated from Hermes and internally unique.
+
+## Follow-up
+
+Task 015 qualifies updater ownership and upstream isolation so a HermesZooid update cannot silently switch back to NousResearch Hermes or operate on the existing Hermes installation.

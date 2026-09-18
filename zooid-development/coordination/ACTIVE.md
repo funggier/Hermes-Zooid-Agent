@@ -1,23 +1,23 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `014-hermeszooid-listener-port-coexistence`
+- Active Task: `015-hermeszooid-update-ownership-upstream-isolation`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
-- Last GREEN SHA: `496277bdeb13283c7a573675d7b678fa68e96c31`
+- Last GREEN SHA: `a9ecb4a1a27d9d971ac9114dad137e73c37863f2`
 - Canonical product token: `hermeszooid`
 
 ## Active task
 
-[Task 014 — HermesZooid Listener and Port Coexistence](../tasks/014-hermeszooid-listener-port-coexistence.md)
+[Task 015 — HermesZooid Update Ownership and Upstream Isolation](../tasks/015-hermeszooid-update-ownership-upstream-isolation.md)
 
 ## Immediate next action
 
-Inventory every local port-binding surface and inherited default before assigning any HermesZooid listener defaults.
+Audit updater repository authority, release/update metadata, cleanup targeting and post-update restart paths before writing the RED contract.
 
 ## Real-machine boundary
 
-Do not install yet. Service/process ownership is GREEN; listener ports, updater behavior and destructive lifecycle coexistence remain unqualified.
+Do not install yet. Listener defaults are GREEN; updater ownership and destructive lifecycle coexistence are not yet qualified.
 
-Next unused task ID: 015.
+Next unused task ID: 016.
