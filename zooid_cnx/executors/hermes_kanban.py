@@ -103,6 +103,8 @@ class HermesKanbanExecutor:
         Hermes connector, where the full runtime preflight and migrations run.
         """
         kb = self._kanban()
+        from hermes_cli import kanban_db_connect as kbc
+
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(
             self.db_path,
@@ -122,6 +124,7 @@ class HermesKanbanExecutor:
             conn.execute("PRAGMA secure_delete=ON")
             conn.execute("PRAGMA cell_size_check=ON")
             conn.executescript(kb.SCHEMA_SQL)
+            kbc._migrate_add_optional_columns(conn)
             yield conn
         finally:
             with contextlib.suppress(Exception):
