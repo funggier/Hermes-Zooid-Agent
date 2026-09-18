@@ -38,6 +38,7 @@ class HermesKanbanExecutor:
         db_path: Path | str,
         zooid_home: Path | str | None = None,
         board: str = default_board,
+        assignee: str | None = None,
         workspaces_root: Path | str | None = None,
         attachments_root: Path | str | None = None,
     ):
@@ -47,6 +48,8 @@ class HermesKanbanExecutor:
         home_value = zooid_home or os.environ.get("ZOOID_HOME") or self.db_path.parent
         self.zooid_home = Path(home_value).expanduser().resolve()
         self.board = str(board).strip() or self.default_board
+        self.assignee = str(assignee).strip() if assignee is not None else None
+        self.assignee = self.assignee or None
         self.workspaces_root = Path(
             workspaces_root or (self.db_path.parent / "workspaces")
         ).expanduser().resolve()
@@ -188,17 +191,24 @@ criterion cannot be proven, block/request review instead of claiming success.
             return existing
 
         kb = self._kanban()
+        from hermes_cli import kanban_db_workspace as kbw
+
         with self.connect_board() as conn:
-            return kb.create_task(
+            task_id = kb.create_task(
                 conn,
                 title=title,
                 body=self._worker_body(body),
+                assignee=self.assignee,
                 created_by="cogentnexus",
                 workspace_kind="scratch",
                 project_id="",
                 idempotency_key=operation_key,
                 completion_contract="local-only",
             )
+            planned_workspace = (self.workspaces_root / task_id).resolve()
+            self.workspaces_root.mkdir(parents=True, exist_ok=True)
+            kbw.set_workspace_path(conn, task_id, planned_workspace)
+            return task_id
 
     def find(self, operation_key: str) -> Optional[ExecutorSnapshot]:
         operation_key = operation_key.strip()
