@@ -56,3 +56,9 @@ Preserve licenses, copyright notices, attribution and third-party obligations.
 
 Do not stop/reset/uninstall/mutate live Hermes, OpenClaw, CogentNexus-OpenClaw or shared provider
 runtimes unless a later numbered acceptance task explicitly scopes that operation.
+
+## HermesZooid naming isolation
+
+The user has a separate Zooid program. Bare `zooid` is reserved for that project.
+HermesZooid product/runtime resources must use `hermeszooid` / `HERMESZOOID_*` naming.
+Historical documentation may retain old names as evidence, but new writable/runtime/package identities must not use bare Zooid naming.

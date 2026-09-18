@@ -1,23 +1,21 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `009-hermeszooid-cli-home-independence`
+- Active Task: `010-hermeszooid-internal-namespace-migration`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
 - Canonical product token: `hermeszooid`
-- Last GREEN source boundary: Task 008 source-ready checkpoint `e18e3e9705b3312b97a8f231924e5c8e9af2f94e`
+- Last GREEN identity run: `35360523016`
 
 ## Active task
 
-[Task 009 — hermeszooid CLI and Home Independence](../tasks/009-hermeszooid-cli-home-independence.md)
+[Task 010 — HermesZooid Internal Namespace Migration](../tasks/010-hermeszooid-internal-namespace-migration.md)
 
 ## Immediate next action
 
-Write RED tests for `hermeszooid`, `HERMESZOOID_HOME`, Windows/POSIX defaults, inherited `HERMES_HOME` isolation and CogentNexus default-home migration.
+Write RED tests requiring `hermeszooid.cnx` and forbidding active runtime dependence on `zooid_cnx`, then migrate source/tests/workflow paths atomically.
 
 ## Real-machine boundary
 
-Do not install hermeszooid on the user's machine until package/CLI/home, installer, Desktop and lifecycle coexistence tasks are all GREEN.
-
-Next unused task ID: 010.
+Do not install on the user's machine until internal namespace, installer/Desktop identity and lifecycle coexistence are GREEN.

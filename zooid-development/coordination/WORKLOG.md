@@ -2,12 +2,14 @@
 
 Chronological compact log; numbered tasks hold full details.
 
-## 2026-09-18 — Tasks 001–007
-Execution foundation reached GREEN through the real Hermes worker subprocess envelope.
+## 2026-09-18 — Task 009 RED
+`f045c272...` defined the HermesZooid identity/home contract and failed because package `hermeszooid` did not exist.
 
-## 2026-09-18 — Task 008 PAUSED / SOURCE_READY
-Provider acceptance source is GREEN, but live run is deferred until product coexistence is proven.
+## 2026-09-18 — Task 009 implementation
+`cc272da4...` added distribution/CLI/home identity; `4eabc3f3...` fixed child migration; `8ccc789c...` refreshed local lock identity.
 
-## 2026-09-18 — Task 009 ACTIVE
-User selected canonical technical name `hermeszooid` and requested product-independence work before any real-machine install.
-Root identity contract: CLI `hermeszooid`, environment root `HERMESZOOID_HOME`, Windows default `%LOCALAPPDATA%\hermeszooid`, POSIX default `~/.hermeszooid`.
+## 2026-09-18 — Task 009 DONE / GREEN
+`HermesZooid Identity` workflow run `35360523016` SUCCESS, including `uv lock --check` and focused identity contract.
+
+## 2026-09-18 — Task 010 ACTIVE
+Opened internal namespace migration because the user has a separate Zooid project. Target runtime namespace: `hermeszooid.cnx`; no installed `zooid_cnx` shim.

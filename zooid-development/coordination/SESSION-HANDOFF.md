@@ -1,4 +1,4 @@
-# Zooid Session Handoff — Current
+# HermesZooid Session Handoff — Current
 
 Updated: 2026-09-18
 
@@ -6,30 +6,29 @@ Repo: `funggier/Hermes-Zooid-Agent`
 Branch: `agent/zooid-independence`
 Canonical product token: `hermeszooid`
 
-## User priority change
+## Critical naming rule
 
-Do product independence/coexistence before installing or running live acceptance on the real machine.
+The user also owns a separate program/project named Zooid.
+Do not use bare `zooid` as HermesZooid package, CLI, environment root, writable path, service/app identity, or future protocol.
 
-Task 008 is PAUSED / SOURCE_READY.
-Task 009 is ACTIVE.
+## Completed
+
+Task 009 DONE/GREEN.
+`HermesZooid Identity` run `35360523016` SUCCESS, including `uv lock --check`.
+
+Distribution/CLI/home are now `hermeszooid` / `HERMESZOOID_HOME` / `.hermeszooid`.
+
+## Active
+
+Task 010 migrates active runtime namespace `zooid_cnx` -> `hermeszooid.cnx` with no installed compatibility shim.
 
 ## Resume order
 
-1. `zooid-development/AGENTS.md`
+1. AGENTS.md
 2. this file
-3. `coordination/ACTIVE.md`
-4. `tasks/009-hermeszooid-cli-home-independence.md`
-5. `coordination/STATUS.md`
-
-## Current target
-
-Make hermeszooid own its CLI and home selection:
-- `hermeszooid`
-- `HERMESZOOID_HOME`
-- Windows `%LOCALAPPDATA%\hermeszooid`
-- POSIX `~/.hermeszooid`
-
-Existing `HERMES_HOME` must never choose hermeszooid product state.
+3. ACTIVE.md
+4. Task 010
+5. STATUS.md
 
 ## Safety
 

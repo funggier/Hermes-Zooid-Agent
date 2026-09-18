@@ -2,18 +2,17 @@
 
 **Project: ACTIVE — PRODUCT INDEPENDENCE FIRST**
 
-Current task: [009 — hermeszooid CLI and Home Independence](../tasks/009-hermeszooid-cli-home-independence.md)
-
 | Task | State | Result |
 | --- | --- | --- |
-| 001–007 | DONE / GREEN | CogentNexus execution path through real Hermes worker spawn envelope |
-| 008 | PAUSED / SOURCE_READY | Provider acceptance code GREEN; live run intentionally deferred |
-| 009 | ACTIVE | Root product CLI/home independence |
+| 001–007 | DONE / GREEN | Execution path through real Hermes worker spawn envelope |
+| 008 | PAUSED / SOURCE_READY | Live provider acceptance deferred |
+| 009 | DONE / GREEN | `hermeszooid` distribution/CLI/home + clean lock identity |
+| 010 | ACTIVE | Internal runtime namespace migration |
 
 ## Collision status
 
-Current inherited product surfaces are still not safe for side-by-side installation with existing Hermes.
+External package/CLI/home identity is now HermesZooid-owned and does not use Hermes or bare Zooid names.
 
-Task 009 begins the repair with canonical token `hermeszooid`, CLI `hermeszooid`, and `HERMESZOOID_HOME`.
+Remaining source issue: active CogentNexus runtime still lives in historical top-level namespace `zooid_cnx`. Task 010 removes it before installer work.
 
-Real-machine installation remains prohibited until coexistence acceptance is GREEN.
+Real-machine installation remains prohibited.
