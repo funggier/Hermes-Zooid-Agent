@@ -49,4 +49,5 @@ jobs:
           python -m pytest
           --confcutdir=tests/zooid_cnx
           tests/zooid_cnx/test_hermeszooid_identity.py
+          tests/hermeszooid_cnx/test_namespace.py
           -q
