@@ -1,22 +1,22 @@
 from pathlib import Path
 
-from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
-from zooid_cnx.execution import ExecutionCoordinator, ExecutionStatus, ExecutorState
-from zooid_cnx.store import CogentNexusStore
+from hermeszooid.cnx.executors.hermes_kanban import HermesKanbanExecutor
+from hermeszooid.cnx.execution import ExecutionCoordinator, ExecutionStatus, ExecutorState
+from hermeszooid.cnx.store import CogentNexusStore
 
 
 def test_real_dispatcher_claims_zooid_card_and_runs_in_zooid_workspace(tmp_path, monkeypatch):
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_dispatch as dispatch
 
-    zooid_home = tmp_path / "zooid"
+    hermeszooid_home = tmp_path / "zooid"
     executor = HermesKanbanExecutor(
-        db_path=zooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
-        zooid_home=zooid_home,
+        db_path=hermeszooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
+        hermeszooid_home=hermeszooid_home,
         assignee="default",
     )
 
-    with CogentNexusStore(zooid_home / "cogentnexus.db") as store:
+    with CogentNexusStore(hermeszooid_home / "cogentnexus.db") as store:
         project = store.create_project("drive one real dispatcher lifecycle")
         ticket = store.create_ticket(
             project.id,
@@ -55,7 +55,7 @@ def test_real_dispatcher_claims_zooid_card_and_runs_in_zooid_workspace(tmp_path,
             monkeypatch.setattr(
                 dispatch,
                 "_process_fingerprint",
-                lambda pid: f"zooid-test-epoch|{int(pid)}",
+                lambda pid: f"hermeszooid-test-epoch|{int(pid)}",
             )
 
             spawns = []

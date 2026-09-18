@@ -1,13 +1,13 @@
 from dataclasses import replace
 
-from zooid_cnx.execution import (
+from hermeszooid.cnx.execution import (
     ExecutionCoordinator,
     ExecutionStatus,
     ExecutorEvidence,
     ExecutorSnapshot,
     ExecutorState,
 )
-from zooid_cnx.store import CogentNexusStore, StepState, TicketState
+from hermeszooid.cnx.store import CogentNexusStore, StepState, TicketState
 
 
 class FakeExecutor:

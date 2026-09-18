@@ -1,6 +1,6 @@
-from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
-from zooid_cnx.execution import ExecutionCoordinator, ExecutionStatus, ExecutorState
-from zooid_cnx.store import CogentNexusStore
+from hermeszooid.cnx.executors.hermes_kanban import HermesKanbanExecutor
+from hermeszooid.cnx.execution import ExecutionCoordinator, ExecutionStatus, ExecutorState
+from hermeszooid.cnx.store import CogentNexusStore
 
 
 def _kanban_module():
@@ -17,7 +17,7 @@ def _finish_with_cnx_evidence(
 ):
     kb = _kanban_module()
     with executor.connect_board() as conn:
-        claimed = kb.claim_task(conn, task_id, claimer="zooid-test")
+        claimed = kb.claim_task(conn, task_id, claimer="hermeszooid-test")
         assert claimed is not None
         assert claimed.current_run_id is not None
         assert kb.complete_task(
@@ -40,19 +40,19 @@ def _finish_with_cnx_evidence(
 
 
 def test_default_storage_and_worker_environment_are_zooid_owned(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "hermeszooid"
+    hermeszooid_home = tmp_path / "hermeszooid"
     hermes_home = tmp_path / "live-hermes"
-    monkeypatch.setenv("HERMESZOOID_HOME", str(zooid_home))
+    monkeypatch.setenv("HERMESZOOID_HOME", str(hermeszooid_home))
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setenv("HERMES_KANBAN_HOME", str(hermes_home / "kanban-live"))
 
     executor = HermesKanbanExecutor.open_default()
 
-    expected_root = zooid_home / "kanban" / "boards" / "cogentnexus"
+    expected_root = hermeszooid_home / "kanban" / "boards" / "cogentnexus"
     assert executor.db_path == expected_root / "kanban.db"
 
     env = executor.worker_env()
-    assert env["HERMES_KANBAN_HOME"] == str(zooid_home)
+    assert env["HERMES_KANBAN_HOME"] == str(hermeszooid_home)
     assert env["HERMES_KANBAN_BOARD"] == "cogentnexus"
     assert env["HERMES_KANBAN_DB"] == str(expected_root / "kanban.db")
     assert env["HERMES_KANBAN_WORKSPACES_ROOT"] == str(expected_root / "workspaces")
@@ -126,7 +126,7 @@ def test_real_kanban_done_and_blocked_states_map_without_guessing(tmp_path):
     )
     kb = _kanban_module()
     with executor.connect_board() as conn:
-        claimed = kb.claim_task(conn, blocked_id, claimer="zooid-test")
+        claimed = kb.claim_task(conn, blocked_id, claimer="hermeszooid-test")
         assert claimed is not None
         assert kb.block_task(
             conn,
@@ -191,7 +191,7 @@ def test_done_without_structured_acceptance_evidence_does_not_auto_accept(tmp_pa
 
         kb = _kanban_module()
         with executor.connect_board() as conn:
-            claimed = kb.claim_task(conn, dispatched.external_id, claimer="zooid-test")
+            claimed = kb.claim_task(conn, dispatched.external_id, claimer="hermeszooid-test")
             assert claimed is not None
             assert kb.complete_task(
                 conn,

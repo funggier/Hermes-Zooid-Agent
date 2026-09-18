@@ -6,8 +6,8 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - "hermeszooid/**"
-      - "zooid_cnx/**"
-      - "tests/zooid_cnx/test_hermeszooid_identity.py"
+      - "hermeszooid/cnx/**"
+      - "tests/hermeszooid_cnx/test_hermeszooid_identity.py"
       - ".github/workflows/hermeszooid-identity.yml"
   workflow_dispatch:
 
@@ -47,7 +47,7 @@ jobs:
       - name: Run HermesZooid identity contract
         run: >-
           python -m pytest
-          --confcutdir=tests/zooid_cnx
-          tests/zooid_cnx/test_hermeszooid_identity.py
+          --confcutdir=tests/hermeszooid_cnx
+          tests/hermeszooid_cnx/test_hermeszooid_identity.py
           tests/hermeszooid_cnx/test_namespace.py
           -q

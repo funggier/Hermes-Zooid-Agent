@@ -5,11 +5,11 @@ import tomllib
 from pathlib import Path
 
 from hermeszooid.identity import build_runtime_env, resolve_home
-from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
-from zooid_cnx.store import CogentNexusStore
+from hermeszooid.cnx.executors.hermes_kanban import HermesKanbanExecutor
+from hermeszooid.cnx.store import CogentNexusStore
 
 
-def test_explicit_hermeszooid_home_wins_and_hermes_home_is_ignored(tmp_path):
+def test_explicit_hermeshermeszooid_home_wins_and_hermes_home_is_ignored(tmp_path):
     product_home = tmp_path / "hermeszooid"
     hermes_home = tmp_path / "hermes-existing"
     legacy_zooid = tmp_path / "legacy-zooid"
@@ -75,7 +75,7 @@ def test_runtime_env_is_one_way_translation_without_mutating_parent(tmp_path):
     assert child["KEEP_ME"] == "yes"
 
 
-def test_cogentnexus_and_kanban_defaults_use_hermeszooid_home(tmp_path, monkeypatch):
+def test_cogentnexus_and_kanban_defaults_use_hermeshermeszooid_home(tmp_path, monkeypatch):
     product_home = tmp_path / "hermeszooid"
     monkeypatch.setenv("HERMESZOOID_HOME", str(product_home))
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "live-hermes"))
@@ -85,7 +85,7 @@ def test_cogentnexus_and_kanban_defaults_use_hermeszooid_home(tmp_path, monkeypa
         assert store.db_path == (product_home / "cogentnexus.db").resolve()
 
     executor = HermesKanbanExecutor.open_default()
-    assert executor.zooid_home == product_home.resolve()
+    assert executor.hermeszooid_home == product_home.resolve()
     assert executor.db_path == (
         product_home / "kanban" / "boards" / "cogentnexus" / "kanban.db"
     ).resolve()

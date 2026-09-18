@@ -2,19 +2,19 @@ import json
 import os
 from pathlib import Path
 
-from zooid_cnx.dispatcher_process import ZooidDispatcherProcess
-from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
+from hermeszooid.cnx.dispatcher_process import HermesZooidDispatcherProcess
+from hermeszooid.cnx.executors.hermes_kanban import HermesKanbanExecutor
 
 
 def test_dispatcher_child_has_isolated_env_same_board_and_restart_stability(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "hermeszooid"
+    hermeszooid_home = tmp_path / "hermeszooid"
     parent_sentinel = str(tmp_path / "parent-must-not-change.db")
     monkeypatch.setenv("HERMES_KANBAN_DB", parent_sentinel)
     monkeypatch.setenv("HERMES_KANBAN_BOARD", "parent-board")
 
     executor = HermesKanbanExecutor(
-        db_path=zooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
-        zooid_home=zooid_home,
+        db_path=hermeszooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
+        hermeszooid_home=hermeszooid_home,
         board="cogentnexus",
         assignee="default",
     )
@@ -24,9 +24,9 @@ def test_dispatcher_child_has_isolated_env_same_board_and_restart_stability(tmp_
         body="prove child process isolation",
     )
 
-    process = ZooidDispatcherProcess(
+    process = HermesZooidDispatcherProcess(
         executor,
-        state_dir=zooid_home / "dispatcher",
+        state_dir=hermeszooid_home / "dispatcher",
         probe_interval=0.05,
     )
 
@@ -71,10 +71,10 @@ def test_dispatcher_child_has_isolated_env_same_board_and_restart_stability(tmp_
 
 
 def test_dispatcher_child_env_scrubs_worker_identity_without_mutating_parent(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "hermeszooid"
+    hermeszooid_home = tmp_path / "hermeszooid"
     executor = HermesKanbanExecutor(
-        db_path=zooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
-        zooid_home=zooid_home,
+        db_path=hermeszooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
+        hermeszooid_home=hermeszooid_home,
     )
     for key, value in {
         "HERMES_KANBAN_TASK": "parent-task",
@@ -87,7 +87,7 @@ def test_dispatcher_child_env_scrubs_worker_identity_without_mutating_parent(tmp
     }.items():
         monkeypatch.setenv(key, value)
 
-    process = ZooidDispatcherProcess(executor, state_dir=zooid_home / "dispatcher")
+    process = HermesZooidDispatcherProcess(executor, state_dir=hermeszooid_home / "dispatcher")
     child_env = process.child_env()
 
     for key in (
@@ -102,5 +102,5 @@ def test_dispatcher_child_env_scrubs_worker_identity_without_mutating_parent(tmp
         assert key not in child_env
         assert key in os.environ
 
-    assert child_env["HERMESZOOID_HOME"] == str(zooid_home.resolve())
+    assert child_env["HERMESZOOID_HOME"] == str(hermeszooid_home.resolve())
     assert child_env["HERMES_KANBAN_DB"] == str(executor.db_path)

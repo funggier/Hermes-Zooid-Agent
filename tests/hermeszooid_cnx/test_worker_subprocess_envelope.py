@@ -4,7 +4,7 @@ import stat
 import time
 from pathlib import Path
 
-from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
+from hermeszooid.cnx.executors.hermes_kanban import HermesKanbanExecutor
 
 
 def _write_fake_hermes(path: Path, receipt: Path) -> None:
@@ -57,10 +57,10 @@ def test_real_default_spawn_pins_zooid_worker_envelope_without_provider(tmp_path
     from hermes_cli import kanban_db as kb
     from hermes_cli.kanban_db_dispatch import _default_spawn
 
-    zooid_home = tmp_path / "zooid"
+    hermeszooid_home = tmp_path / "zooid"
     executor = HermesKanbanExecutor(
-        db_path=zooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
-        zooid_home=zooid_home,
+        db_path=hermeszooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
+        hermeszooid_home=hermeszooid_home,
         board="cogentnexus",
         assignee="default",
     )
@@ -90,7 +90,7 @@ def test_real_default_spawn_pins_zooid_worker_envelope_without_provider(tmp_path
     monkeypatch.setenv("HERMES_BIN", str(fake_hermes))
     for key, value in executor.worker_env().items():
         monkeypatch.setenv(key, value)
-    monkeypatch.setenv("ZOOID_HOME", str(zooid_home))
+    monkeypatch.setenv("ZOOID_HOME", str(hermeszooid_home))
 
     pid = _default_spawn(claimed, str(workspace), board=executor.board)
     assert isinstance(pid, int) and pid > 0

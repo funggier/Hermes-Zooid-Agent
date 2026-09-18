@@ -1,12 +1,12 @@
-name: Zooid CogentNexus Kernel
+name: HermesZooid CogentNexus Kernel
 
 on:
   pull_request:
     paths:
-      - "zooid_cnx/**"
-      - "tests/zooid_cnx/**"
+      - "hermeszooid/cnx/**"
+      - "tests/hermeszooid/cnx/**"
       - "zooid-development/**"
-      - ".github/workflows/zooid-cnx.yml"
+      - ".github/workflows/hermeszooid-cnx.yml"
   workflow_dispatch:
 
 permissions:
@@ -39,6 +39,6 @@ jobs:
       - name: Run isolated CogentNexus contracts
         run: >-
           python -m pytest
-          --confcutdir=tests/zooid_cnx
-          tests/zooid_cnx
+          --confcutdir=tests/hermeszooid_cnx
+          tests/hermeszooid_cnx
           -q

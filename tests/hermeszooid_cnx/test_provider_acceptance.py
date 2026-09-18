@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from zooid_cnx.provider_acceptance import (
+from hermeszooid.cnx.provider_acceptance import (
     AcceptancePlan,
     AcceptanceStatus,
     LiveProviderAcceptance,
@@ -116,7 +116,7 @@ def test_worker_evidence_alone_cannot_finish_without_local_artifact_hash(tmp_pat
 
 
 def test_preflight_is_read_only_and_reports_explicit_runtime(tmp_path, monkeypatch):
-    from zooid_cnx.provider_acceptance import PreflightStatus
+    from hermeszooid.cnx.provider_acceptance import PreflightStatus
 
     hermes_home = tmp_path / "hermes-profile"
     hermes_home.mkdir()
@@ -139,7 +139,7 @@ def test_preflight_is_read_only_and_reports_explicit_runtime(tmp_path, monkeypat
 
 
 def test_preflight_blocks_missing_named_profile_without_writing_state(tmp_path, monkeypatch):
-    from zooid_cnx.provider_acceptance import PreflightStatus
+    from hermeszooid.cnx.provider_acceptance import PreflightStatus
 
     hermes_home = tmp_path / "hermes-root"
     hermes_home.mkdir()

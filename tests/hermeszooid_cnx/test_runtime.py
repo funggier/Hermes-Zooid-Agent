@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from zooid_cnx.store import (
+from hermeszooid.cnx.store import (
     AcceptanceError,
     CogentNexusStore,
     RecoveryAction,
@@ -31,9 +31,9 @@ def _make_ticket(store):
 
 
 def test_ticket_lifecycle_persists_and_recovers_without_replay(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "hermeszooid"
+    hermeszooid_home = tmp_path / "hermeszooid"
     hermes_home = tmp_path / "hermes"
-    monkeypatch.setenv("HERMESZOOID_HOME", str(zooid_home))
+    monkeypatch.setenv("HERMESZOOID_HOME", str(hermeszooid_home))
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
     with CogentNexusStore.open_default() as store:
@@ -47,7 +47,7 @@ def test_ticket_lifecycle_persists_and_recovers_without_replay(tmp_path, monkeyp
             ticket.id,
             first.id,
             kind="artifact",
-            value="src/zooid_cnx/store.py",
+            value="src/hermeszooid.cnx/store.py",
             criterion_index=0,
             op_key="evidence:1",
         )
@@ -88,7 +88,7 @@ def test_ticket_lifecycle_persists_and_recovers_without_replay(tmp_path, monkeyp
         assert latest["phase"] == "ticket_done"
         assert json.loads(latest["state_json"])["ticket_state"] == "done"
 
-    assert (zooid_home / "cogentnexus.db").is_file()
+    assert (hermeszooid_home / "cogentnexus.db").is_file()
     assert not (hermes_home / "cogentnexus.db").exists()
 
 
