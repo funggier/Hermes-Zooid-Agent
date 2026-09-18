@@ -1,4 +1,4 @@
-# HermesZooid Session Handoff — Current
+# Zooid Session Handoff — Current
 
 Updated: 2026-09-18
 
@@ -6,21 +6,18 @@ Repo: `funggier/Hermes-Zooid-Agent`
 Branch: `agent/zooid-independence`
 Canonical product token: `hermeszooid`
 
-## Critical naming rule
-
-The user also owns a separate program/project named Zooid.
-Do not use bare `zooid` as HermesZooid package, CLI, environment root, writable path, service/app identity, or future protocol.
-
 ## Completed
 
-Task 009 DONE/GREEN.
-`HermesZooid Identity` run `35360523016` SUCCESS, including `uv lock --check`.
+Task 009 is DONE/GREEN.
+`hermeszooid`, `HERMESZOOID_HOME`, `%LOCALAPPDATA%\hermeszooid`, `~/.hermeszooid`, distribution and lock identity are qualified.
 
-Distribution/CLI/home are now `hermeszooid` / `HERMESZOOID_HOME` / `.hermeszooid`.
+Bare `zooid` is reserved for the separate Zooid project.
 
 ## Active
 
-Task 010 migrates active runtime namespace `zooid_cnx` -> `hermeszooid.cnx` with no installed compatibility shim.
+Task 010 — Windows Installer Independence.
+
+Audit/repair installer source repo, root/app path, PATH launcher, user env vars and lifecycle process/task ownership before any real-machine installation.
 
 ## Resume order
 
@@ -32,4 +29,4 @@ Task 010 migrates active runtime namespace `zooid_cnx` -> `hermeszooid.cnx` with
 
 ## Safety
 
-No real-machine installation yet. No force push. No live Hermes/OpenClaw lifecycle mutation.
+No real-machine install yet. No force push. Existing Hermes and separate Zooid resources must remain untouched.

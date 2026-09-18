@@ -6,63 +6,59 @@
 - Completed: 2026-09-18
 - Canonical product token: `hermeszooid`
 - RED commit: `f045c272c530d8d32571d131e4341fdf0617e2a8`
-- Implementation: `cc272da4c5e345b002e632320535a5d3a5e5ebfe`
-- Dispatcher migration fix: `4eabc3f333bdf4f802475d7f9fb2ad95cef20bfa`
-- Lock identity fix: `8ccc789cec6d5d19f0ad0a75eb6b102db3583ca2`
-- HermesZooid identity workflow commit: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
-- Authoritative identity run: `35360523016` — SUCCESS
+- Collision-hardening test commit: `a483cc0962e3f81e6ee1311e0390a697bf856d71`
+- Final tested SHA: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
+- HermesZooid Identity workflow: `35360523016` — SUCCESS
+- Zooid CogentNexus workflow: `35360522931` — SUCCESS
+- Docker: SUCCESS
 
-## Why this task existed
+## Purpose
 
-The fork still inherited Hermes package, CLI and writable-home identity. In addition, the user has a separate program/project named Zooid, so HermesZooid must not consume bare `zooid` runtime/install identity either.
+Create a root product boundary that cannot accidentally share writable state or command names with either an existing Hermes installation or the separate Zooid project.
 
-## Canonical product boundary
+## Canonical identity
 
-- Distribution: `hermeszooid`
+- Python distribution: `hermeszooid`
 - CLI: `hermeszooid`
-- Product home environment variable: `HERMESZOOID_HOME`
+- product home variable: `HERMESZOOID_HOME`
 - Windows default: `%LOCALAPPDATA%\hermeszooid`
 - POSIX default: `~/.hermeszooid`
 
-The installed distribution exports no `hermes`, `hermes-agent`, `hermes-acp`, or `zooid` command.
+Bare `zooid` is reserved for the separate Zooid project and is not a HermesZooid runtime/install identity.
 
-`HERMES_HOME` is only a process-local compatibility variable after HermesZooid has already resolved its own home. Existing `HERMES_HOME` never chooses HermesZooid state.
+## RED
 
-`ZOOID_HOME` is ignored/removed at the HermesZooid boundary and must not choose writable product state.
+`f045c272c530d8d32571d131e4341fdf0617e2a8` failed exactly because the new `hermeszooid` package did not yet exist.
 
-## TDD history
+## Implementation
 
-RED `f045c272...`: `hermeszooid` package did not exist.
+Added stdlib-first package `hermeszooid/` with:
+- `identity.py` for product-home ownership;
+- `cli.py` launcher;
+- `python -m hermeszooid` entrypoint.
 
-The contract was tightened in `a483cc09...` to forbid Hermes and Zooid CLI collisions and require distribution name `hermeszooid`.
+The launcher resolves HermesZooid ownership first, then maps the resolved home into process-local `HERMES_HOME` only for inherited Hermes internals.
 
-Implementation `cc272da4...` added the `hermeszooid` launcher/identity module and migrated CogentNexus/Kanban defaults to `HERMESZOOID_HOME`.
+One-way translation:
+`HERMESZOOID_HOME/default -> process-local HERMES_HOME`
 
-`4eabc3f3...` repaired one child-process migration mismatch discovered by the full focused contract.
+Never:
+`existing HERMES_HOME -> HermesZooid product home`
 
-`8ccc789c...` refreshed only the local-project/self-extra identity in `uv.lock` from `hermes-agent` to `hermeszooid` without changing dependency versions.
+`ZOOID_HOME` is removed from the translated runtime environment and is not used for writable-state selection.
 
-## GREEN
+Package metadata now owns the `hermeszooid` distribution and does not export `hermes`, `hermes-agent`, `hermes-acp`, or bare `zooid` console commands.
 
-HermesZooid-owned workflow:
-`HermesZooid Identity / Package CLI home and lock identity`
+## Validation
 
-Run `35360523016` — SUCCESS.
+Dedicated `HermesZooid Identity` workflow verifies:
+- lockfile identity with `uv lock --check`;
+- CLI/home isolation contract;
+- coexistence with inherited Hermes command namespace;
+- no bare Zooid product identity.
 
-It proves:
-- explicit `HERMESZOOID_HOME` wins;
-- Windows and POSIX defaults are HermesZooid-owned;
-- existing Hermes and legacy Zooid home variables do not select product state;
-- runtime translation is one-way into process-local `HERMES_HOME`;
-- distribution and CLI identity are `hermeszooid`;
-- colliding Hermes/Zooid CLI entry points are absent;
-- CogentNexus and Kanban defaults use HermesZooid home;
-- `uv lock --check` is clean.
-
-## Result
-
-PASS.
+Result: PASS.
 
 ## Follow-up
 
-Task 010 removes the remaining internal source/package namespace `zooid_cnx` by migrating it under `hermeszooid.cnx`. Bare `zooid` is reserved for the user's separate Zooid program.
+Task 010 isolates the Windows installer itself: repository source, install root, launchers, user environment variables, and process/lifecycle ownership.

@@ -4,15 +4,20 @@
 
 | Task | State | Result |
 | --- | --- | --- |
-| 001–007 | DONE / GREEN | Execution path through real Hermes worker spawn envelope |
+| 001–007 | DONE / GREEN | Execution foundation |
 | 008 | PAUSED / SOURCE_READY | Live provider acceptance deferred |
-| 009 | DONE / GREEN | `hermeszooid` distribution/CLI/home + clean lock identity |
-| 010 | ACTIVE | Internal runtime namespace migration |
+| 009 | DONE / GREEN | `hermeszooid` distribution/CLI/home isolated from Hermes and Zooid |
+| 010 | ACTIVE | Windows installer independence |
+
+## Latest evidence
+
+- HEAD: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
+- HermesZooid Identity `35360523016`: SUCCESS
+- Zooid CogentNexus `35360522931`: SUCCESS
+- Docker: SUCCESS
 
 ## Collision status
 
-External package/CLI/home identity is now HermesZooid-owned and does not use Hermes or bare Zooid names.
+Package/CLI/home collision is repaired. Windows installer, Desktop and lifecycle resources are not yet qualified for side-by-side installation.
 
-Remaining source issue: active CogentNexus runtime still lives in historical top-level namespace `zooid_cnx`. Task 010 removes it before installer work.
-
-Real-machine installation remains prohibited.
+Real-machine install remains blocked.

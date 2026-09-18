@@ -1,21 +1,23 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `010-hermeszooid-internal-namespace-migration`
+- Active Task: `010-hermeszooid-windows-installer-independence`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
+- Last GREEN SHA: `71f30c93b68bfcd46c8eea08c57ba33298ca682d`
 - Canonical product token: `hermeszooid`
-- Last GREEN identity run: `35360523016`
 
 ## Active task
 
-[Task 010 — HermesZooid Internal Namespace Migration](../tasks/010-hermeszooid-internal-namespace-migration.md)
+[Task 010 — HermesZooid Windows Installer Independence](../tasks/010-hermeszooid-windows-installer-independence.md)
 
 ## Immediate next action
 
-Write RED tests requiring `hermeszooid.cnx` and forbidding active runtime dependence on `zooid_cnx`, then migrate source/tests/workflow paths atomically.
+Write RED Windows installer ownership tests, then remove inherited Hermes/Zooid install-path, launcher, repository and lifecycle collisions.
 
 ## Real-machine boundary
 
-Do not install on the user's machine until internal namespace, installer/Desktop identity and lifecycle coexistence are GREEN.
+Still do not install on the user's machine. Package/home is GREEN; installer/Desktop/lifecycle coexistence are not yet GREEN.
+
+Next unused task ID: 011.
