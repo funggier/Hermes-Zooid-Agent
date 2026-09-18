@@ -4,65 +4,60 @@
 
 Current active task:
 
-[004 — Hermes Kanban Executor Integration](../tasks/004-hermes-kanban-executor-integration.md)
-
-## Chronological milestones
+[005 — Hermes Dispatcher Lifecycle Integration](../tasks/005-hermes-dispatcher-lifecycle-integration.md)
 
 | Task | State | Result |
 | --- | --- | --- |
-| 001 — Upstream sync and planning isolation | DONE | Clean current Hermes baseline + isolated Zooid planning |
-| 002 — Minimal CogentNexus durable kernel | DONE / GREEN | Durable semantic state, evidence gate, idempotency and restart recovery |
-| 003 — Executor-neutral execution bridge | DONE / GREEN | Durable external bindings and success/failure reconciliation |
-| 004 — Hermes Kanban executor integration | ACTIVE | Concrete adapter not yet implemented |
+| 001 | DONE | Current upstream baseline + Zooid planning isolation |
+| 002 | DONE / GREEN | Durable CogentNexus semantic kernel |
+| 003 | DONE / GREEN | Executor-neutral external execution bridge |
+| 004 | DONE / GREEN | Concrete real Hermes Kanban executor |
+| 005 | ACTIVE | Dispatcher lifecycle qualification |
 
-## Current capabilities
+## Current working capabilities
 
-- `zooid_cnx/store.py`: Project, Ticket, Step, Evidence, Events, Checkpoints.
-- Zooid-owned persistence under `ZOOID_HOME`.
-- Evidence-gated completion.
-- Conservative `RUNNING -> VERIFY` crash recovery.
-- Idempotent semantic transitions.
-- `zooid_cnx/execution.py`: replaceable external executor contract.
-- Durable external execution binding.
-- Restart rediscovery through deterministic operation keys.
-- Generic executor success/failure reconciliation.
-- Zooid-owned lightweight CI on standard GitHub runners.
+CogentNexus now has:
 
-## Validation evidence
+- Project / Ticket / ordered Step;
+- risk and uncertainty;
+- acceptance criteria;
+- Evidence, semantic Events and Checkpoints;
+- idempotent transitions;
+- conservative RUNNING -> VERIFY recovery;
+- durable generic external bindings;
+- replaceable ExecutorPort;
+- real Hermes Kanban executor;
+- Zooid-owned Kanban DB/workspace/attachment environment;
+- structured Kanban-to-CogentNexus evidence contract.
 
-Minimal kernel GREEN checkpoint:
+## Latest validation
 
-`e29010b62e08d3a78872c2bf16ce0d6428ae3b58`
+Task 004 final tested SHA:
 
-Generic execution bridge implementation:
+`68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
 
-`59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`
+Zooid workflow run:
 
-Authoritative Zooid contract workflow:
+`35354752792` — SUCCESS.
 
-`35352550001` — SUCCESS.
+Task 004 failure history is preserved in its task file rather than erased.
 
-Docker workflow on the generic bridge implementation: SUCCESS.
+## Current boundary
 
-## Current architecture boundary
+Creating/reconciling real Kanban cards is GREEN.
 
-CogentNexus is semantic authority.
+The next missing proof is dispatcher execution lifecycle. No claim is yet made that a real
+Hermes worker/provider can execute a CogentNexus Step end-to-end.
 
-Hermes Kanban will be the first execution substrate, not the semantic source of truth.
+## Deferred after Task 005
 
-The next implementation must keep Kanban writable data under Zooid ownership and must not use
-the live Hermes board.
-
-## Later work
-
-Not yet claimed as active:
-
+- bounded real worker/provider acceptance;
 - provider/router abstraction;
 - autonomous Goal decomposition;
 - context budgeting/compression;
 - multi-session worker/reviewer topology;
-- single-model scheduler/fairness/preemption;
+- single-model fairness/preemption scheduler;
 - Project escalation / Group;
-- full product identity/config/runtime separation;
-- coexistence acceptance;
-- Zooid-owned updater/release path.
+- full product identity/runtime separation;
+- coexistence qualification;
+- Zooid-owned update/release path.

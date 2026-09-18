@@ -1,173 +1,175 @@
 # Task 004 — Hermes Kanban Executor Integration
 
 - Task ID: `004-hermes-kanban-executor-integration`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 003
-- Current branch: `agent/zooid-independence`
-- Starting code HEAD: `59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`
+- Final tested SHA: `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- Authoritative Zooid workflow run: `35354752792` — SUCCESS
+
+## Why this task existed
+
+Task 003 proved CogentNexus could drive a generic external executor, but no real executor
+implementation existed. The first production substrate should reuse Hermes Kanban instead of
+building a competing scheduler because current Hermes already owns mature task/claim/heartbeat/
+run-history/dispatcher mechanics.
+
+The architectural requirement was to reuse those mechanics without making Hermes Kanban the
+semantic source of truth and without writing into the live user's Hermes board.
 
 ## Goal
 
-Make the first real CogentNexus execution path use Hermes Kanban as the executor while keeping
-CogentNexus semantic state and Zooid writable runtime state independent from live Hermes.
+Implement `HermesKanbanExecutor` as the first concrete `ExecutorPort`.
 
-Target flow:
+Target boundary:
 
-`CogentNexus Ticket -> Step -> ExecutionCoordinator -> HermesKanbanExecutor -> Kanban task -> Hermes worker -> result/evidence -> CogentNexus acceptance -> next Step/DONE`
+- CogentNexus owns Goal, Ticket, Step, risk, uncertainty, acceptance criteria, Evidence,
+  semantic Events, Checkpoints, recovery and final completion.
+- Hermes Kanban owns executor queue state, claim/run state and worker lifecycle.
+- The adapter translates between both domains.
+- Writable Kanban data remains Zooid-owned.
 
-## Why Hermes Kanban
+## Important decisions
 
-Current Hermes already contains mature execution primitives:
+### Zooid-owned storage
 
-- SQLite Kanban state;
-- task idempotency keys;
-- claim fencing;
-- worker heartbeat;
-- task run history;
-- event history;
-- dispatcher crash/stale recovery;
-- completion fencing;
-- bounded worker context;
-- worker lifecycle handling.
-
-Reimplementing those mechanisms inside CogentNexus would create competing schedulers and more
-failure modes.
-
-CogentNexus should reuse execution mechanics but retain semantic ownership.
-
-## Important discovery
-
-Hermes supports pinning Kanban storage through `HERMES_KANBAN_DB`.
-
-Therefore Zooid can place its execution board beneath `ZOOID_HOME`, rather than writing to
-the user's normal `~/.hermes/kanban.db`.
-
-This is the intended first coexistence boundary.
-
-## Ownership boundary
-
-CogentNexus owns:
-
-- Project / Goal;
-- Ticket / Step;
-- risk / uncertainty;
-- acceptance criteria;
-- Evidence;
-- semantic Events / Checkpoints;
-- external binding;
-- final completion decision.
-
-Hermes Kanban owns:
-
-- dispatch queue mechanics;
-- claim / heartbeat;
-- worker process lifecycle;
-- task run state;
-- bounded execution context;
-- raw executor result.
-
-The adapter translates between the two. It must not make Hermes Kanban the source of truth for
-CogentNexus completion.
-
-## Planned implementation
-
-Create a narrow adapter, expected under a Zooid-owned module such as:
-
-`zooid_cnx/executors/hermes_kanban.py`
-
-The exact path may change if current source constraints require it; record any change here.
-
-Adapter responsibilities:
-
-- initialize/open a Zooid-owned Kanban DB;
-- submit a Kanban task using the CogentNexus deterministic operation key as Hermes'
-  `idempotency_key`;
-- locate an existing task by that key after restart;
-- inspect task status and latest closed run;
-- map Kanban states into `ExecutorState`;
-- extract bounded summary/result/metadata into `ExecutorEvidence`;
-- never silently resubmit an ambiguous task;
-- keep external task identifiers only in the generic binding layer.
-
-## Storage target
-
-Provisional:
+Default board path:
 
 `ZOOID_HOME/kanban/boards/cogentnexus/kanban.db`
 
-or another Zooid-owned path chosen after exact current Hermes path behavior is verified.
+The adapter also exposes the worker environment required to pin:
 
-No test or adapter should use the live user's Hermes board.
+- `HERMES_KANBAN_HOME`
+- `HERMES_KANBAN_BOARD`
+- `HERMES_KANBAN_DB`
+- `HERMES_KANBAN_WORKSPACES_ROOT`
+- `HERMES_KANBAN_ATTACHMENTS_ROOT`
 
-## Test strategy
+to Zooid-owned paths.
 
-### Adapter contract
+### Explicit evidence
 
-Use a temporary real Hermes Kanban SQLite DB and real current Kanban functions.
+A Hermes task reaching `done` is not enough for CogentNexus acceptance.
 
-Prove:
+The task body carries a completion protocol requiring structured evidence in:
 
-- submit creates one task;
-- same operation key discovers/reuses the same task;
-- status mapping is deterministic;
-- DONE result/summary becomes executor evidence;
-- BLOCKED remains blocked;
-- restart can rediscover a task before a CogentNexus binding was persisted;
-- temporary board path stays outside HERMES_HOME.
+`metadata.cogentnexus_evidence`
 
-### Integration contract
+Each evidence record names its evidence kind, value, and optional acceptance-criterion index.
+Prose such as "worker says done" never bypasses the CogentNexus acceptance gate.
 
-Connect:
+### Idempotency stronger than native archive behavior
 
-CogentNexus store + ExecutionCoordinator + HermesKanbanExecutor
+Hermes native `create_task` ignores archived rows when resolving its idempotency key.
+CogentNexus must be more conservative because an archived executor row may still represent an
+already-executed side effect.
 
-without launching a real provider/model first.
+The adapter searches all rows by deterministic operation key before creating a new task.
 
-Only after source-level integration is GREEN should a later bounded acceptance step launch a
-real Hermes worker/dispatcher.
+## TDD / failure history
 
-## Non-goals for this task
+### RED
 
-- final Zooid launcher/installer;
-- provider router;
-- autonomous Goal decomposition;
-- multiple reviewer/worker sessions;
-- Group orchestration;
-- live destructive Hermes lifecycle changes;
-- full Zooid updater;
-- release.
+Commit:
 
-## Current progress
+`c579a04e3576ab907a309ab2926e6660320e7176`
 
-Completed before opening:
+Zooid CI reached the new test and failed because:
 
-- targeted audit of current Hermes Kanban `create_task`, `get_task`, `list_runs`,
-  dispatcher, workspace behavior and DB pinning;
-- confirmed task-level `idempotency_key` support;
-- confirmed worker receives `HERMES_KANBAN_DB`;
-- confirmed current generic execution bridge is GREEN.
+`zooid_cnx.executors.hermes_kanban`
 
-Not yet completed:
+did not exist.
 
-- concrete `HermesKanbanExecutor`;
-- adapter-specific RED contract;
-- adapter GREEN;
-- real worker acceptance.
+This is the authoritative Task 004 RED boundary.
 
-## Acceptance
+### First implementation
 
-Task 004 is DONE only when:
+Commit:
 
-1. the real Hermes Kanban adapter satisfies `ExecutorPort`;
-2. tests use an isolated Zooid-owned/temp Kanban DB;
-3. duplicate dispatch is prevented across restart;
-4. result/evidence reconciliation passes;
-5. failure/block state mapping passes;
-6. generic CogentNexus contracts remain GREEN;
-7. no live Hermes board/config/runtime was modified;
-8. evidence and exact tested SHA are recorded here and in STATUS/WORKLOG.
+`7ae990ad3ceebbf3ea266c9ec5a72d2fab3ae699`
 
-## Next action
+Implemented:
 
-Write the adapter RED contract first, then implement the minimum adapter required to turn it GREEN.
+- `zooid_cnx/executors/hermes_kanban.py`
+- submit/find/inspect;
+- status mapping;
+- Zooid worker environment;
+- structured evidence extraction;
+- restart-safe operation-key discovery.
+
+### Failure 1 — whole-runtime connection coupling
+
+Zooid workflow run:
+
+`35354296118` — FAILURE
+
+Root cause:
+
+Hermes public `kanban_db_connect.connect()` performs a full application-state preflight.
+That transitively imports session/provider/config modules, eventually requiring `PyYAML`.
+The lightweight executor contract intentionally did not install the whole Hermes provider stack.
+
+This was not a semantic adapter failure. It exposed an unwanted coupling boundary.
+
+Repair:
+
+`946aeda8e208ae9773cf2f00e3d0ceaced425a3c`
+
+The adapter now opens its dedicated Zooid board with SQLite directly while using Hermes'
+canonical schema and real Kanban domain functions. A real Hermes dispatcher/worker may still
+open the same DB through the normal full-runtime connector later.
+
+### Failure 2 — base schema versus migration pass
+
+Zooid workflow run:
+
+`35354683506` — FAILURE
+
+Root cause:
+
+Hermes `SCHEMA_SQL` intentionally represents the base schema. Current columns such as
+`completion_contract` are added by the Kanban migration pass.
+
+Repair:
+
+`68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+
+The dedicated connector now executes the current Hermes migration helper after base schema
+initialization.
+
+### GREEN
+
+Zooid workflow:
+
+`Zooid CogentNexus Kernel / CogentNexus runtime contracts`
+
+Run:
+
+`35354752792`
+
+Result: SUCCESS.
+
+The contract suite proves:
+
+- default Kanban writable paths are Zooid-owned;
+- duplicate submit reuses one real Kanban task;
+- restart finds the same task by operation key;
+- real Kanban `done` maps to executor success;
+- structured evidence is imported with criterion binding;
+- real Kanban `blocked` maps to CogentNexus block behavior;
+- CogentNexus -> real Kanban adapter -> Evidence -> Ticket DONE works end-to-end;
+- a `done` task without structured evidence does not auto-accept.
+
+## Result
+
+PASS.
+
+The first concrete executor now exists and is backed by current Hermes Kanban schema/domain
+logic while preserving CogentNexus semantic authority and Zooid writable-state isolation.
+
+## Follow-up
+
+Task 005 qualifies the real Hermes dispatcher lifecycle around this board:
+ready -> claim -> workspace -> spawn -> running, using an injected non-provider spawn function
+first so infrastructure can be proven before any real model call.

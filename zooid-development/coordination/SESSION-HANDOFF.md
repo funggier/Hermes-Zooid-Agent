@@ -2,126 +2,84 @@
 
 Updated: 2026-09-18
 
-This is the first file to read when a new ChatGPT/Hermes/Codex session must resume Zooid work.
+Read this first when a new session resumes Zooid work.
 
 ## Repository
 
 - Repo: `funggier/Hermes-Zooid-Agent`
 - Clean upstream branch: `main`
-- Zooid working branch: `agent/zooid-independence`
+- Zooid branch: `agent/zooid-independence`
 - Hermes upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- Current production-code checkpoint before this documentation update:
-  `59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`
-- PR: #1, draft
+- Last GREEN code SHA before this documentation checkpoint:
+  `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- PR #1 remains draft.
 
-Always verify GitHub current branch HEAD before relying on the SHA above.
+Always verify current GitHub HEAD and Actions before trusting cached SHA/status.
 
 ## Read order
 
 1. `zooid-development/AGENTS.md`
 2. this file
 3. `zooid-development/coordination/ACTIVE.md`
-4. active numbered task:
-   `zooid-development/tasks/004-hermes-kanban-executor-integration.md`
+4. `zooid-development/tasks/005-hermes-dispatcher-lifecycle-integration.md`
 5. `zooid-development/coordination/STATUS.md`
-6. `zooid-development/tasks/README.md`
-7. architecture plan only as needed:
-   `zooid-development/plans/minimal-cogentnexus-runtime.md`
+6. task index/history only as needed
 
-Do not load every historical task unless its rationale is needed.
+## Completed foundation
 
-## What already works
+### Task 001
 
-### Task 001 — repository baseline
+DONE. Fork synchronized and Zooid development layer isolated.
 
-DONE.
+### Task 002
 
-Fork main was fast-forwarded to current Hermes baseline and Zooid planning was isolated under
-`zooid-development/`.
+DONE / GREEN. Durable CogentNexus kernel:
+Project, Ticket, Step, Evidence, Events, Checkpoints, idempotency and conservative recovery.
 
-### Task 002 — durable CogentNexus kernel
+### Task 003
 
-DONE and GREEN.
+DONE / GREEN. Generic ExecutionCoordinator + replaceable ExecutorPort + durable external binding.
 
-Code:
+### Task 004
 
-`zooid_cnx/store.py`
+DONE / GREEN. Concrete `HermesKanbanExecutor`.
 
-Provides Project, Ticket, Step, Evidence, semantic Events, Checkpoints, idempotency and
-conservative recovery.
+Final validation:
 
-Critical invariant:
+- SHA `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- Zooid workflow `35354752792` — SUCCESS
 
-`RUNNING -> VERIFY` after interruption; no implicit side-effect replay.
+Important Task 004 decisions:
 
-### Task 003 — executor-neutral bridge
+- Kanban writable state belongs under `ZOOID_HOME`.
+- Hermes `done` does not imply CogentNexus acceptance.
+- Evidence must arrive through `metadata.cogentnexus_evidence`.
+- operation-key search is conservative across archived cards.
+- dedicated Zooid board initialization uses Hermes base schema plus migration pass.
 
-DONE and GREEN.
+## Active work — Task 005
 
-Code:
+Prove the real dispatcher lifecycle around a CogentNexus-created Kanban card using an injected
+spawn function before any provider/model call.
 
-`zooid_cnx/execution.py`
+Target:
 
-Provides `ExecutorPort`, `ExecutionCoordinator`, durable external bindings and reconciliation.
+`READY -> claim -> Zooid workspace -> spawn -> RUNNING -> structured completion -> CogentNexus DONE`
 
-Authoritative Zooid workflow run for this contract:
-
-`35352550001` — SUCCESS.
-
-## What is being done now
-
-Task 004 — Hermes Kanban Executor Integration.
-
-Goal: implement the first real executor using current Hermes Kanban while storing its writable
-board state under Zooid ownership.
-
-Key discovery:
-
-Hermes already supports task `idempotency_key` and pins a worker to a DB through
-`HERMES_KANBAN_DB`.
-
-This means Zooid should reuse Kanban dispatch/heartbeat/run mechanics rather than duplicate them.
+Current Hermes exposes `dispatch_once(..., spawn_fn=...)`, making this separation possible.
 
 ## Immediate next action
 
-Create RED tests for a concrete Hermes Kanban adapter using a temporary isolated Kanban DB.
+Add and run the dispatcher lifecycle contract. Prefer existing Hermes mechanics and the narrowest
+possible adapter changes.
 
-Then implement the minimum adapter that can:
+## Safety boundaries
 
-- submit by deterministic CogentNexus operation key;
-- find/reuse the same task;
-- inspect status;
-- surface completed result/evidence;
-- preserve blocked state;
-- work through the generic `ExecutionCoordinator`.
+- do not use live `~/.hermes`;
+- do not call a real provider yet;
+- do not force push;
+- do not mutate live Hermes/OpenClaw;
+- do not weaken evidence gating;
+- do not retry uncertain side effects automatically.
 
-Do not launch a real provider worker until this source-level adapter contract is GREEN.
-
-## Current safety boundaries
-
-- Do not force-push.
-- Keep `main` clean as upstream mirror.
-- Do not write to live `~/.hermes` state.
-- Do not stop/reset/uninstall live Hermes/OpenClaw/CogentNexus-OpenClaw for this task.
-- Do not infer that external side effects are safe to replay.
-- Keep CogentNexus semantic completion evidence-gated.
-- Preserve attribution/licenses.
-
-## Validation note
-
-Zooid now owns a lightweight workflow:
-
-`.github/workflows/zooid-cnx.yml`
-
-It runs CogentNexus contracts on standard GitHub runners.
-
-Inherited upstream CI includes NousResearch large-runner labels such as
-`ubuntu-latest-96-core` and `windows-latest-32-core`, which may remain queued in this fork.
-Do not confuse that infrastructure limitation with Zooid contract failure.
-
-## If interrupted again
-
-Do not reconstruct state from chat memory first.
-
-Read this file, ACTIVE, Task 004 and current GitHub Actions. Continue from the last exact
-repository evidence and append the outcome to the numbered task/worklog.
+If interrupted, resume from GitHub evidence, not chat memory.

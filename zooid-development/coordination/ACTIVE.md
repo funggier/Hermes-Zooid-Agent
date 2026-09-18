@@ -1,38 +1,36 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `004-hermes-kanban-executor-integration`
+- Active Task: `005-hermes-dispatcher-lifecycle-integration`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Working branch: `agent/zooid-independence`
-- Current upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
-- Last GREEN production-code checkpoint:
-  `59a55b4e6ce2d7e004d2b7f2ab5d036c7b774714`
+- Hermes upstream baseline: `01382698fc32ec7740b6a204d9b7a6abeac74d33`
+- Last GREEN code SHA: `68c2a2a7337cd7162a98a5ac90400e11ca2abeb9`
+- Last GREEN Zooid workflow run: `35354752792`
 
 ## Active task
 
-[Task 004 — Hermes Kanban Executor Integration](../tasks/004-hermes-kanban-executor-integration.md)
-
-Goal: bind the GREEN generic CogentNexus execution bridge to current Hermes Kanban while keeping
-Zooid writable state isolated from live Hermes.
+[Task 005 — Hermes Dispatcher Lifecycle Integration](../tasks/005-hermes-dispatcher-lifecycle-integration.md)
 
 ## Immediate next action
 
-Write RED adapter tests against a temporary real Hermes Kanban DB, then implement the minimum
-`HermesKanbanExecutor` needed to make the contract GREEN.
-
-Do not launch a real provider worker until the source-level adapter is GREEN.
+Add an isolated dispatcher lifecycle test using current Hermes dispatcher mechanics and an
+injected spawn function. Prove ready -> claim -> Zooid workspace -> running -> evidence -> DONE
+before any real provider/model worker is launched.
 
 ## Resume rule
 
-For a new session, read [SESSION-HANDOFF.md](SESSION-HANDOFF.md) first.
+Read [SESSION-HANDOFF.md](SESSION-HANDOFF.md) first in a new session.
 
-Task numbering is monotonic. The next new task after this one is 005; never reuse an old number.
+The next new task number after Task 005 is 006. Never reuse prior numbers.
 
 ## Boundaries
 
 - no force push;
-- keep `main` a clean upstream mirror;
-- no live Hermes/OpenClaw lifecycle mutation during this source-level task;
-- no implicit replay of uncertain side effects;
+- keep `main` as clean upstream mirror;
+- no live Hermes/OpenClaw lifecycle mutation;
+- no live provider call yet;
+- no process-global path mutation as a production design;
+- no implicit side-effect replay;
 - GitHub repository/actions are authoritative.
