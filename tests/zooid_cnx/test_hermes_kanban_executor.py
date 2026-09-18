@@ -40,9 +40,9 @@ def _finish_with_cnx_evidence(
 
 
 def test_default_storage_and_worker_environment_are_zooid_owned(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "zooid"
+    zooid_home = tmp_path / "hermeszooid"
     hermes_home = tmp_path / "live-hermes"
-    monkeypatch.setenv("ZOOID_HOME", str(zooid_home))
+    monkeypatch.setenv("HERMESZOOID_HOME", str(zooid_home))
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
     monkeypatch.setenv("HERMES_KANBAN_HOME", str(hermes_home / "kanban-live"))
 
@@ -61,7 +61,7 @@ def test_default_storage_and_worker_environment_are_zooid_owned(tmp_path, monkey
 
 
 def test_submit_find_and_restart_are_idempotent_on_real_kanban_db(tmp_path):
-    db_path = tmp_path / "zooid" / "kanban" / "boards" / "cogentnexus" / "kanban.db"
+    db_path = tmp_path / "hermeszooid" / "kanban" / "boards" / "cogentnexus" / "kanban.db"
     executor = HermesKanbanExecutor(db_path=db_path)
     operation_key = "cnx:tkt_1:stp_1:execute"
 
@@ -141,8 +141,8 @@ def test_real_kanban_done_and_blocked_states_map_without_guessing(tmp_path):
 
 
 def test_execution_coordinator_reaches_done_through_real_kanban_adapter(tmp_path):
-    cnx_db = tmp_path / "zooid" / "cogentnexus.db"
-    kanban_db = tmp_path / "zooid" / "kanban" / "boards" / "cogentnexus" / "kanban.db"
+    cnx_db = tmp_path / "hermeszooid" / "cogentnexus.db"
+    kanban_db = tmp_path / "hermeszooid" / "kanban" / "boards" / "cogentnexus" / "kanban.db"
     executor = HermesKanbanExecutor(db_path=kanban_db)
 
     with CogentNexusStore(cnx_db) as store:

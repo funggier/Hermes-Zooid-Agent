@@ -235,7 +235,7 @@ class CogentNexusStore:
 
     @classmethod
     def open_default(cls) -> "CogentNexusStore":
-        home = Path(os.environ.get("ZOOID_HOME") or (Path.home() / ".zooid"))
+        home = Path(os.environ.get("HERMESZOOID_HOME") or (Path.home() / ".hermeszooid"))
         return cls(home / "cogentnexus.db")
 
     def __enter__(self) -> "CogentNexusStore":

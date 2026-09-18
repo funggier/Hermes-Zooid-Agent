@@ -59,7 +59,7 @@ class ZooidDispatcherProcess:
         for key in _WORKER_IDENTITY_KEYS:
             env.pop(key, None)
 
-        env["ZOOID_HOME"] = str(self.executor.zooid_home)
+        env["HERMESZOOID_HOME"] = str(self.executor.zooid_home)
         env.update(self.executor.worker_env())
         env["PYTHONUNBUFFERED"] = "1"
         return env

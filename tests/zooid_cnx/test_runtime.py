@@ -31,9 +31,9 @@ def _make_ticket(store):
 
 
 def test_ticket_lifecycle_persists_and_recovers_without_replay(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "zooid"
+    zooid_home = tmp_path / "hermeszooid"
     hermes_home = tmp_path / "hermes"
-    monkeypatch.setenv("ZOOID_HOME", str(zooid_home))
+    monkeypatch.setenv("HERMESZOOID_HOME", str(zooid_home))
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
     with CogentNexusStore.open_default() as store:

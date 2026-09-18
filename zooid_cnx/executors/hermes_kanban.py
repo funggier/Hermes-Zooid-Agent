@@ -49,7 +49,7 @@ class HermesKanbanExecutor:
         self.db_path = Path(db_path).expanduser().resolve()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
-        home_value = zooid_home or os.environ.get("ZOOID_HOME") or self.db_path.parent
+        home_value = zooid_home or os.environ.get("HERMESZOOID_HOME") or self.db_path.parent
         self.zooid_home = Path(home_value).expanduser().resolve()
         self.board = str(board).strip() or self.default_board
         self.assignee = str(assignee).strip() if assignee is not None else None
@@ -76,7 +76,7 @@ class HermesKanbanExecutor:
     @classmethod
     def open_default(cls) -> "HermesKanbanExecutor":
         home = Path(
-            os.environ.get("ZOOID_HOME") or (Path.home() / ".zooid")
+            os.environ.get("HERMESZOOID_HOME") or (Path.home() / ".hermeszooid")
         ).expanduser().resolve()
         root = home / "kanban" / "boards" / cls.default_board
         return cls(

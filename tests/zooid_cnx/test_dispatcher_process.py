@@ -7,7 +7,7 @@ from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
 
 
 def test_dispatcher_child_has_isolated_env_same_board_and_restart_stability(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "zooid"
+    zooid_home = tmp_path / "hermeszooid"
     parent_sentinel = str(tmp_path / "parent-must-not-change.db")
     monkeypatch.setenv("HERMES_KANBAN_DB", parent_sentinel)
     monkeypatch.setenv("HERMES_KANBAN_BOARD", "parent-board")
@@ -71,7 +71,7 @@ def test_dispatcher_child_has_isolated_env_same_board_and_restart_stability(tmp_
 
 
 def test_dispatcher_child_env_scrubs_worker_identity_without_mutating_parent(tmp_path, monkeypatch):
-    zooid_home = tmp_path / "zooid"
+    zooid_home = tmp_path / "hermeszooid"
     executor = HermesKanbanExecutor(
         db_path=zooid_home / "kanban" / "boards" / "cogentnexus" / "kanban.db",
         zooid_home=zooid_home,
@@ -102,5 +102,5 @@ def test_dispatcher_child_env_scrubs_worker_identity_without_mutating_parent(tmp
         assert key not in child_env
         assert key in os.environ
 
-    assert child_env["ZOOID_HOME"] == str(zooid_home.resolve())
+    assert child_env["HERMESZOOID_HOME"] == str(zooid_home.resolve())
     assert child_env["HERMES_KANBAN_DB"] == str(executor.db_path)

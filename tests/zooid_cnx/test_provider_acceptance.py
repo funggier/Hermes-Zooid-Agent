@@ -55,17 +55,17 @@ def test_dispatch_child_env_and_command_do_not_mutate_parent(tmp_path, monkeypat
     runner = LiveProviderAcceptance(plan)
     prepared = runner.prepare()
 
-    monkeypatch.setenv("HERMES_KANBAN_DB", "/parent/not-zooid.db")
+    monkeypatch.setenv("HERMES_KANBAN_DB", "/parent/not-hermeszooid.db")
     monkeypatch.setenv("HERMES_KANBAN_BOARD", "parent-board")
 
     child_env = runner.child_env()
     command = runner.dispatch_command(prepared)
 
-    assert os.environ["HERMES_KANBAN_DB"] == "/parent/not-zooid.db"
+    assert os.environ["HERMES_KANBAN_DB"] == "/parent/not-hermeszooid.db"
     assert os.environ["HERMES_KANBAN_BOARD"] == "parent-board"
     assert child_env["HERMES_KANBAN_DB"] == str(plan.kanban_db)
     assert child_env["HERMES_KANBAN_BOARD"] == plan.board
-    assert child_env["ZOOID_HOME"] == str(plan.home)
+    assert child_env["HERMESZOOID_HOME"] == str(plan.home)
     assert "--mode" in command and "dispatch-task" in command
     assert "--task-id" in command and prepared.external_id in command
     assert "--timeout" in command and str(plan.timeout_seconds) in command
