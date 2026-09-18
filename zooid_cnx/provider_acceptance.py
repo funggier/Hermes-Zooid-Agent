@@ -23,6 +23,21 @@ from .store import AcceptanceError, CogentNexusStore, StepState
 _SAFE_ID = re.compile(r"[A-Za-z0-9_.-]+")
 
 
+class PreflightStatus(str, Enum):
+    READY = "ready"
+    BLOCKED = "blocked"
+
+
+@dataclass(frozen=True)
+class PreflightResult:
+    status: PreflightStatus
+    profile_home: Optional[Path]
+    provider: Optional[str]
+    model: Optional[str]
+    hermes_argv: tuple[str, ...]
+    detail: str = ""
+
+
 class AcceptanceStatus(str, Enum):
     PREPARED = "prepared"
     WAITING_EXTERNAL = "waiting_external"
@@ -136,6 +151,75 @@ class LiveProviderAcceptance:
 
     def open_store(self) -> CogentNexusStore:
         return CogentNexusStore(self.plan.cnx_db)
+
+    def preflight(self) -> PreflightResult:
+        """Read-only runtime resolution before creating acceptance state.
+
+        This deliberately does not inspect or return secret values. Provider
+        authentication is proven only by the later live worker execution.
+        """
+        try:
+            from hermes_cli.profiles import resolve_profile_env
+
+            profile_home = Path(
+                resolve_profile_env(self.plan.profile)
+            ).expanduser().resolve()
+            if not profile_home.exists():
+                return PreflightResult(
+                    PreflightStatus.BLOCKED,
+                    None,
+                    self.plan.provider,
+                    self.plan.model,
+                    (),
+                    f"profile home does not exist: {profile_home}",
+                )
+        except Exception as exc:
+            return PreflightResult(
+                PreflightStatus.BLOCKED,
+                None,
+                self.plan.provider,
+                self.plan.model,
+                (),
+                f"profile resolution failed: {exc}",
+            )
+
+        try:
+            from hermes_cli.kanban_db_dispatch import _resolve_hermes_argv
+
+            hermes_argv = tuple(str(part) for part in _resolve_hermes_argv())
+        except Exception as exc:
+            return PreflightResult(
+                PreflightStatus.BLOCKED,
+                profile_home,
+                self.plan.provider,
+                self.plan.model,
+                (),
+                f"Hermes worker launcher resolution failed: {exc}",
+            )
+
+        if not hermes_argv:
+            return PreflightResult(
+                PreflightStatus.BLOCKED,
+                profile_home,
+                self.plan.provider,
+                self.plan.model,
+                (),
+                "Hermes worker launcher resolved to an empty argv",
+            )
+
+        runtime = (
+            f"explicit provider={self.plan.provider!r}, model={self.plan.model!r}"
+            if self.plan.provider or self.plan.model
+            else "provider/model inherited from selected Hermes profile"
+        )
+        return PreflightResult(
+            PreflightStatus.READY,
+            profile_home,
+            self.plan.provider,
+            self.plan.model,
+            hermes_argv,
+            f"{runtime}; credentials are intentionally not read or exposed by preflight",
+        )
 
     def _step_description(self) -> str:
         return (
@@ -366,6 +450,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--expected-text", default="ZOOID-LIVE-ACCEPTANCE\n")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--preflight", action="store_true")
     return parser
 
 
@@ -384,6 +469,26 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(json.dumps(runner.describe(), indent=2, sort_keys=True))
         return 0
+    if args.preflight:
+        result = runner.preflight()
+        payload = asdict(result)
+        payload["status"] = result.status.value
+        if result.profile_home is not None:
+            payload["profile_home"] = str(result.profile_home)
+        payload["hermes_argv"] = list(result.hermes_argv)
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0 if result.status is PreflightStatus.READY else 2
+
+    preflight = runner.preflight()
+    if preflight.status is not PreflightStatus.READY:
+        payload = asdict(preflight)
+        payload["status"] = preflight.status.value
+        payload["profile_home"] = (
+            str(preflight.profile_home) if preflight.profile_home is not None else None
+        )
+        payload["hermes_argv"] = list(preflight.hermes_argv)
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 2
 
     prepared = runner.prepare()
     result = runner.run_live(prepared)
