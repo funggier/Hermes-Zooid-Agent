@@ -1,0 +1,50 @@
+name: HermesZooid Listener Port Coexistence
+
+on:
+  pull_request:
+    paths:
+      - "hermeszooid/listener_defaults.py"
+      - "gateway/config_env.py"
+      - "gateway/platforms/api_server.py"
+      - "gateway/platforms/webhook.py"
+      - "gateway/platforms/msgraph_webhook.py"
+      - "gateway/platforms/whatsapp_cloud.py"
+      - "gateway/platforms/bluebubbles.py"
+      - "plugins/platforms/feishu/adapter.py"
+      - "plugins/platforms/wecom/callback_adapter.py"
+      - "plugins/platforms/sms/adapter.py"
+      - "plugins/platforms/line/adapter.py"
+      - "plugins/platforms/teams/adapter.py"
+      - "hermes_cli/subcommands/dashboard.py"
+      - "hermes_cli/main_dashboard.py"
+      - "tests/hermeszooid/test_listener_port_coexistence.py"
+      - ".github/workflows/hermeszooid-listener-ports.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hermeszooid-listener-ports-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  listener-contract:
+    name: Listener defaults and coexistence contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check pytest==9.1.1
+      - name: Run listener coexistence contract
+        run: >-
+          python -m pytest
+          --confcutdir=tests/hermeszooid
+          tests/hermeszooid/test_listener_port_coexistence.py
+          -q
