@@ -49,6 +49,14 @@ def test_real_dispatcher_claims_zooid_card_and_runs_in_zooid_workspace(tmp_path,
             # Profile availability is outside this task's boundary. The real
             # dispatcher claim/workspace/run bookkeeping remains under test.
             monkeypatch.setattr(dispatch, "_profile_exists_fn", lambda: None)
+            # fake_spawn returns a synthetic PID. Keep Hermes' durable PID
+            # bookkeeping under test, but replace the host-level fingerprint
+            # probe that cannot identify a nonexistent process.
+            monkeypatch.setattr(
+                dispatch,
+                "_process_fingerprint",
+                lambda pid: f"zooid-test-epoch|{int(pid)}",
+            )
 
             spawns = []
 
