@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   kernel-contract:
-    name: Minimal runtime contract
+    name: CogentNexus runtime contracts
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -33,9 +33,9 @@ jobs:
       - name: Install pinned test dependency
         run: python -m pip install --disable-pip-version-check pytest==9.1.1
 
-      - name: Run isolated CogentNexus kernel contract
+      - name: Run isolated CogentNexus contracts
         run: >-
           python -m pytest
           --confcutdir=tests/zooid_cnx
-          tests/zooid_cnx/test_runtime.py
+          tests/zooid_cnx
           -q
