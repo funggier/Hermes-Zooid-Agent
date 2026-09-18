@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Any, Callable, Dict, Optional
 
+from hermeszooid.listener_defaults import listener_port
 from gateway.config import (
     GatewayConfig,
     HomeChannel,
@@ -587,7 +588,7 @@ _ENV_STEPS: tuple = (
             ("agent_id", "WECOM_CALLBACK_AGENT_ID"), ("token", "WECOM_CALLBACK_TOKEN"),
             ("encoding_aes_key", "WECOM_CALLBACK_ENCODING_AES_KEY"),
             # No host default: falsy extra.host lets the adapter's dual-stack DEFAULT_HOST=None bind v4+v6.
-            ("host", "WECOM_CALLBACK_HOST"), ("port", "WECOM_CALLBACK_PORT", "", _int_or(8645)),
+            ("host", "WECOM_CALLBACK_HOST"), ("port", "WECOM_CALLBACK_PORT", "", _int_or(listener_port("wecom_callback"))),
         ),
     ),
     # Weixin (personal WeChat via iLink Bot API)
@@ -608,7 +609,7 @@ _ENV_STEPS: tuple = (
         fixed=(
             ("server_url", "BLUEBUBBLES_SERVER_URL", "", _strip_slash), ("password", "BLUEBUBBLES_PASSWORD"),
             ("webhook_host", "BLUEBUBBLES_WEBHOOK_HOST", "127.0.0.1"),
-            ("webhook_port", "BLUEBUBBLES_WEBHOOK_PORT", "", _int_or(8645)),
+            ("webhook_port", "BLUEBUBBLES_WEBHOOK_PORT", "", _int_or(listener_port("bluebubbles"))),
             ("webhook_path", "BLUEBUBBLES_WEBHOOK_PATH", "/bluebubbles-webhook"),
             ("send_read_receipts", "BLUEBUBBLES_SEND_READ_RECEIPTS", "true", is_truthy_value),
             ("require_mention", "BLUEBUBBLES_REQUIRE_MENTION", "", _truthy_token),

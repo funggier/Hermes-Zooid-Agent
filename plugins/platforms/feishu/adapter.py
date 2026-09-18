@@ -18,6 +18,7 @@ Session keys prefer union_id (user_id_alt) over open_id (user_id) for stability.
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 import collections
 import concurrent.futures
@@ -148,7 +149,7 @@ _DEFAULT_TEXT_BATCH_MAX_CHARS = 4000
 _DEFAULT_MEDIA_BATCH_DELAY_SECONDS = 0.8
 _DEFAULT_DEDUP_CACHE_SIZE = 2048
 _DEFAULT_WEBHOOK_HOST = "127.0.0.1"
-_DEFAULT_WEBHOOK_PORT = 8765
+_DEFAULT_WEBHOOK_PORT = listener_port("feishu")
 _DEFAULT_WEBHOOK_PATH = "/feishu/webhook"
 # --- TTL, rate-limit and webhook security constants ---
 _FEISHU_DEDUP_TTL_SECONDS = 24 * 60 * 60          # 24 hours — matches openclaw

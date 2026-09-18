@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, quote
 
+from hermeszooid.listener_defaults import listener_port
 import httpx
 
 from gateway.config import Platform, PlatformConfig
@@ -45,7 +46,7 @@ DEFAULT_WEBHOOK_HOST = "127.0.0.1"
 # Webhook events are small JSON/form payloads (attachments come through the REST API); 1 MiB keeps
 # oversized/chunked bodies from buffering unbounded.
 _WEBHOOK_MAX_BODY_BYTES = 1_048_576
-DEFAULT_WEBHOOK_PORT = 8645
+DEFAULT_WEBHOOK_PORT = listener_port("bluebubbles")
 DEFAULT_WEBHOOK_PATH = "/bluebubbles-webhook"
 MAX_TEXT_LENGTH = 4000
 

@@ -1,0 +1,40 @@
+name: HermesZooid Desktop Identity
+
+on:
+  pull_request:
+    paths:
+      - "apps/desktop/package.json"
+      - "apps/desktop/electron/main.ts"
+      - "apps/desktop/electron/bootstrap-runner.ts"
+      - "package-lock.json"
+      - "tests/hermeszooid/test_desktop_identity_contract.py"
+      - ".github/workflows/hermeszooid-desktop-identity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hermeszooid-desktop-identity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identity-contract:
+    name: Desktop machine identity contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check pytest==9.1.1
+      - name: Run Desktop identity contract
+        run: >-
+          python -m pytest
+          --confcutdir=tests/hermeszooid
+          tests/hermeszooid/test_desktop_identity_contract.py
+          -q

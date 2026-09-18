@@ -9,6 +9,7 @@ Requires the ``teams`` extra (auto-installed by the gateway on first start, or
 
 from __future__ import annotations
 
+from hermeszooid.listener_defaults import listener_port
 import asyncio
 # microsoft-teams-apps calls ``load_dotenv(find_dotenv(usecwd=True))`` at ``microsoft_teams.apps.app``
 # import time. Importing it during plugin discovery / ``TeamsSummaryWriter`` imports would pollute process
@@ -65,7 +66,7 @@ from gateway.platforms._shared import (
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_PORT = 3978
+_DEFAULT_PORT = listener_port("teams")
 _MAX_BODY_BYTES = 1_048_576  # Bot Framework activities are JSON well under 1 MiB
 # ``None`` host → aiohttp binds IPv4 + IPv6 ("0.0.0.0" was unreachable on IPv6-only
 # networks such as Fly.io 6PN). Pin via TEAMS_HOST or extra.host.

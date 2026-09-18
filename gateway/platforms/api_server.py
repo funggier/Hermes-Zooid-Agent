@@ -27,6 +27,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from hermeszooid.listener_defaults import listener_port
 # _resolve_request_profile result for a /p/<profile>/ prefix this gateway does not serve (-> 404);
 # distinct from None (no prefix / multiplexing off -> default profile).
 _PROFILE_REJECTED = object()
@@ -198,7 +199,7 @@ def _hermes_version() -> str:
 
 # Default settings
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 8642
+DEFAULT_PORT = listener_port("api_server")
 MAX_STORED_RESPONSES = 100
 MAX_REQUEST_BYTES = 10_000_000  # 10 MB — accommodates long agent conversations with tool calls
 # Send a comment before remote API clients' common 20-second idle deadline.

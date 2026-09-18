@@ -23,6 +23,7 @@ from collections import deque
 from contextlib import nullcontext, suppress
 from typing import Any, Deque, Dict, List, Optional
 
+from hermeszooid.listener_defaults import listener_port
 try:
     from aiohttp import web
 
@@ -54,7 +55,7 @@ _BUILTIN_DELIVER_PLATFORMS = {
 # networks such as Fly.io 6PN); "::" becomes IPv6-only where the kernel sets IPV6_V6ONLY=1, breaking
 # the 127.0.0.1 health check. Users can pin a host via ``platforms.webhook.extra.host``.
 DEFAULT_HOST = None
-DEFAULT_PORT = 8644
+DEFAULT_PORT = listener_port("webhook")
 _INSECURE_NO_AUTH = "INSECURE_NO_AUTH"
 _DYNAMIC_ROUTES_FILENAME = "webhook_subscriptions.json"
 _RATE_WINDOW_SECONDS = 60.0
