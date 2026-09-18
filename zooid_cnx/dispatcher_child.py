@@ -179,7 +179,7 @@ def main(argv: list[str] | None = None) -> int:
 
     executor = HermesKanbanExecutor(
         db_path=db_path,
-        hermeszooid_home=Path(os.environ["HERMESZOOID_HOME"]),
+        zooid_home=Path(os.environ["HERMESZOOID_HOME"]),
         board=board,
     )
 
