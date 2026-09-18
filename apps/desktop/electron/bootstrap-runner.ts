@@ -199,12 +199,12 @@ function bootstrapCacheDir(hermesHome) {
 // checkout under ~/.hermes/hermes-agent. Used as a last-resort fallback when
 // the pinned commit can't be fetched from GitHub (e.g. a locally-built desktop
 // app stamped to an unpushed HEAD).
-function installedAgentInstallScript(hermesHome) {
-  if (!hermesHome) {
+function installedAgentInstallScript(hermesZooidHome) {
+  if (!hermesZooidHome) {
     return null
   }
 
-  const candidate = path.join(hermesHome, 'hermes-agent', 'scripts', installScriptName())
+  const candidate = path.join(hermesZooidHome, 'app', 'scripts', installScriptName())
 
   try {
     fs.accessSync(candidate, fs.constants.R_OK)
@@ -237,7 +237,7 @@ function downloadInstallScript(ref, destPath) {
   // ref so local builds can still bootstrap without pretending the all-zero
   // placeholder is a real GitHub commit.
   const scriptName = installScriptName()
-  const url = `https://raw.githubusercontent.com/NousResearch/hermes-agent/${ref}/scripts/${scriptName}`
+  const url = `https://raw.githubusercontent.com/funggier/Hermes-Zooid-Agent/${ref}/scripts/${scriptName}`
 
   return new Promise((resolve, reject) => {
     fs.mkdirSync(path.dirname(destPath), { recursive: true })
@@ -474,6 +474,7 @@ function cleanInstallerLogLine(raw: string): string {
 
 function spawnPowerShell(scriptPath, args, { emit, stageName, abortSignal, hermesHome }: any = {}) {
   return new Promise<any>((resolve, reject) => {
+    const hermesZooidHome = hermesHome || process.env.HERMESZOOID_HOME || ''
     const ps = process.platform === 'win32' ? resolveWindowsPowerShell() : 'pwsh'
     const fullArgs = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...args]
 
@@ -484,9 +485,9 @@ function spawnPowerShell(scriptPath, args, { emit, stageName, abortSignal, herme
         stdio: ['ignore', 'pipe', 'pipe'],
         env: {
           ...process.env,
-          // Pass HERMES_HOME through so install.ps1 respects the caller's
-          // choice rather than re-computing the default.
-          HERMES_HOME: hermesHome || process.env.HERMES_HOME || ''
+          // Product ownership stays HermesZooid. install.ps1 resolves this
+          // directly and never consults the upstream Hermes home.
+          HERMESZOOID_HOME: hermesZooidHome
         }
       })
     )
@@ -581,11 +582,13 @@ function spawnPowerShell(scriptPath, args, { emit, stageName, abortSignal, herme
 
 function spawnBash(scriptPath, args, { emit, stageName, abortSignal, hermesHome }: any = {}) {
   return new Promise<any>((resolve, reject) => {
+    const hermesZooidHome = hermesHome || process.env.HERMESZOOID_HOME || ''
     const child = spawn('bash', [scriptPath, ...args], {
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
-        HERMES_HOME: hermesHome || process.env.HERMES_HOME || ''
+        HERMESZOOID_HOME: hermesZooidHome,
+        HERMES_HOME: hermesZooidHome
       }
     })
 
