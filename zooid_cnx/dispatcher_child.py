@@ -38,10 +38,10 @@ def _parser() -> argparse.ArgumentParser:
 def _validate_process_identity(db_path: Path, board: str) -> None:
     env_db = (os.environ.get("HERMES_KANBAN_DB") or "").strip()
     env_board = (os.environ.get("HERMES_KANBAN_BOARD") or "").strip()
-    zooid_home = (os.environ.get("ZOOID_HOME") or "").strip()
+    hermeszooid_home = (os.environ.get("HERMESZOOID_HOME") or "").strip()
 
-    if not zooid_home:
-        raise RuntimeError("dispatcher child requires ZOOID_HOME")
+    if not hermeszooid_home:
+        raise RuntimeError("dispatcher child requires HERMESZOOID_HOME")
     if not env_db:
         raise RuntimeError("dispatcher child requires HERMES_KANBAN_DB")
     if Path(env_db).expanduser().resolve() != db_path:
@@ -179,7 +179,7 @@ def main(argv: list[str] | None = None) -> int:
 
     executor = HermesKanbanExecutor(
         db_path=db_path,
-        zooid_home=Path(os.environ["ZOOID_HOME"]),
+        hermeszooid_home=Path(os.environ["HERMESZOOID_HOME"]),
         board=board,
     )
 
