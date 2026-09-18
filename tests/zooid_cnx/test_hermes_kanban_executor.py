@@ -1,20 +1,22 @@
-from pathlib import Path
-
 from zooid_cnx.executors.hermes_kanban import HermesKanbanExecutor
 from zooid_cnx.execution import ExecutionCoordinator, ExecutionStatus, ExecutorState
 from zooid_cnx.store import CogentNexusStore
 
 
-def _kanban_modules():
+def _kanban_module():
     from hermes_cli import kanban_db as kb
-    from hermes_cli import kanban_db_connect as kbc
 
-    return kb, kbc
+    return kb
 
 
-def _finish_with_cnx_evidence(db_path: Path, task_id: str, *, criterion_index: int = 0):
-    kb, kbc = _kanban_modules()
-    with kbc.connect(db_path) as conn:
+def _finish_with_cnx_evidence(
+    executor: HermesKanbanExecutor,
+    task_id: str,
+    *,
+    criterion_index: int = 0,
+):
+    kb = _kanban_module()
+    with executor.connect_board() as conn:
         claimed = kb.claim_task(conn, task_id, claimer="zooid-test")
         assert claimed is not None
         assert claimed.current_run_id is not None
@@ -77,8 +79,8 @@ def test_submit_find_and_restart_are_idempotent_on_real_kanban_db(tmp_path):
     assert first == second
     assert db_path.is_file()
 
-    kb, kbc = _kanban_modules()
-    with kbc.connect(db_path) as conn:
+    kb = _kanban_module()
+    with executor.connect_board() as conn:
         rows = conn.execute(
             "SELECT id FROM tasks WHERE idempotency_key = ?",
             (operation_key,),
@@ -106,7 +108,7 @@ def test_real_kanban_done_and_blocked_states_map_without_guessing(tmp_path):
         title="done case",
         body="perform one bounded action",
     )
-    _finish_with_cnx_evidence(db_path, done_id)
+    _finish_with_cnx_evidence(executor, done_id)
 
     done = executor.inspect(done_id)
     assert done.state is ExecutorState.SUCCEEDED
@@ -122,8 +124,8 @@ def test_real_kanban_done_and_blocked_states_map_without_guessing(tmp_path):
         title="blocked case",
         body="perform another bounded action",
     )
-    kb, kbc = _kanban_modules()
-    with kbc.connect(db_path) as conn:
+    kb = _kanban_module()
+    with executor.connect_board() as conn:
         claimed = kb.claim_task(conn, blocked_id, claimer="zooid-test")
         assert claimed is not None
         assert kb.block_task(
@@ -162,7 +164,7 @@ def test_execution_coordinator_reaches_done_through_real_kanban_adapter(tmp_path
         assert dispatched.step_id == step.id
         assert dispatched.external_id is not None
 
-        _finish_with_cnx_evidence(kanban_db, dispatched.external_id)
+        _finish_with_cnx_evidence(executor, dispatched.external_id)
 
         result = coordinator.tick(ticket.id)
         assert result.status is ExecutionStatus.DONE
@@ -187,8 +189,8 @@ def test_done_without_structured_acceptance_evidence_does_not_auto_accept(tmp_pa
         coordinator = ExecutionCoordinator(store, executor)
         dispatched = coordinator.tick(ticket.id)
 
-        kb, kbc = _kanban_modules()
-        with kbc.connect(kanban_db) as conn:
+        kb = _kanban_module()
+        with executor.connect_board() as conn:
             claimed = kb.claim_task(conn, dispatched.external_id, claimer="zooid-test")
             assert claimed is not None
             assert kb.complete_task(

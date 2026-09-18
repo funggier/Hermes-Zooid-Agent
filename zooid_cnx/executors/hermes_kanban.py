@@ -1,18 +1,19 @@
 """Hermes Kanban adapter for the CogentNexus executor-neutral bridge.
 
-CogentNexus remains the semantic authority. This adapter only translates one
-bounded Step into a Hermes Kanban task and translates the durable Kanban state
-back into an ExecutorSnapshot.
+CogentNexus remains the semantic authority. This adapter translates one bounded
+Step into a Hermes Kanban task and translates durable Kanban state back into an
+ExecutorSnapshot.
 
 No process-global HERMES_* environment is mutated here. A caller that launches
-the Hermes dispatcher/worker may use :meth:`worker_env` to pin every writable
-Kanban surface beneath Zooid-owned storage.
+the Hermes dispatcher/worker may use worker_env() to pin every writable Kanban
+surface beneath Zooid-owned storage.
 """
 
 from __future__ import annotations
 
 import contextlib
 import os
+import sqlite3
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Optional
@@ -55,7 +56,9 @@ class HermesKanbanExecutor:
 
     @classmethod
     def open_default(cls) -> "HermesKanbanExecutor":
-        home = Path(os.environ.get("ZOOID_HOME") or (Path.home() / ".zooid")).expanduser().resolve()
+        home = Path(
+            os.environ.get("ZOOID_HOME") or (Path.home() / ".zooid")
+        ).expanduser().resolve()
         root = home / "kanban" / "boards" / cls.default_board
         return cls(
             db_path=root / "kanban.db",
@@ -66,13 +69,12 @@ class HermesKanbanExecutor:
         )
 
     @staticmethod
-    def _modules():
+    def _kanban():
         # Lazy import keeps the generic CogentNexus kernel independent from
         # Hermes implementation modules until this concrete adapter is used.
         from hermes_cli import kanban_db as kb
-        from hermes_cli import kanban_db_connect as kbc
 
-        return kb, kbc
+        return kb
 
     def worker_env(self) -> dict[str, str]:
         """Environment required to keep Hermes Kanban runtime state Zooid-owned."""
@@ -83,6 +85,47 @@ class HermesKanbanExecutor:
             "HERMES_KANBAN_WORKSPACES_ROOT": str(self.workspaces_root),
             "HERMES_KANBAN_ATTACHMENTS_ROOT": str(self.attachments_root),
         }
+
+    @contextlib.contextmanager
+    def connect_board(self):
+        """Open the dedicated Zooid board with Hermes' canonical current schema.
+
+        The public Hermes connector performs a full application-state preflight.
+        That is correct for the complete Hermes runtime but imports provider and
+        session state that this narrow adapter does not otherwise depend on.
+
+        Zooid owns this fresh dedicated board, so the adapter opens SQLite with
+        the Kanban durability pragmas and initializes the current Hermes schema
+        directly. Hermes domain mutations such as create_task, claim_task,
+        complete_task and block_task still run unchanged on this connection.
+
+        A real dispatcher/worker later opens the same DB through the normal
+        Hermes connector, where the full runtime preflight and migrations run.
+        """
+        kb = self._kanban()
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(
+            self.db_path,
+            timeout=120.0,
+            isolation_level=None,
+        )
+        try:
+            conn.row_factory = sqlite3.Row
+            conn.text_factory = kb._lossy_text
+            conn.execute("PRAGMA busy_timeout=120000")
+            with contextlib.suppress(sqlite3.DatabaseError):
+                conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA synchronous=FULL")
+            conn.execute("PRAGMA wal_autocheckpoint=100")
+            conn.execute("PRAGMA journal_size_limit=8388608")
+            conn.execute("PRAGMA foreign_keys=ON")
+            conn.execute("PRAGMA secure_delete=ON")
+            conn.execute("PRAGMA cell_size_check=ON")
+            conn.executescript(kb.SCHEMA_SQL)
+            yield conn
+        finally:
+            with contextlib.suppress(Exception):
+                conn.close()
 
     @staticmethod
     def _completion_protocol() -> str:
@@ -113,8 +156,7 @@ criterion cannot be proven, block/request review instead of claiming success.
         return f"{body}\n\n{protocol}\n" if body else f"{protocol}\n"
 
     def _find_task_id(self, operation_key: str) -> Optional[str]:
-        _kb, kbc = self._modules()
-        with contextlib.closing(kbc.connect(self.db_path)) as conn:
+        with self.connect_board() as conn:
             row = conn.execute(
                 """
                 SELECT id
@@ -142,8 +184,8 @@ criterion cannot be proven, block/request review instead of claiming success.
         if existing is not None:
             return existing
 
-        kb, kbc = self._modules()
-        with contextlib.closing(kbc.connect(self.db_path)) as conn:
+        kb = self._kanban()
+        with self.connect_board() as conn:
             return kb.create_task(
                 conn,
                 title=title,
@@ -226,8 +268,8 @@ criterion cannot be proven, block/request review instead of claiming success.
         if not external_id:
             raise ValueError("external_id must not be empty")
 
-        kb, kbc = self._modules()
-        with contextlib.closing(kbc.connect(self.db_path)) as conn:
+        kb = self._kanban()
+        with self.connect_board() as conn:
             task = kb.get_task(conn, external_id)
             if task is None:
                 raise KeyError(f"unknown Hermes Kanban task: {external_id}")
@@ -247,7 +289,10 @@ criterion cannot be proven, block/request review instead of claiming success.
                     else "Hermes Kanban task is blocked"
                 )
             elif state is ExecutorState.FAILED and summary is None:
-                summary = f"Hermes Kanban task entered non-success terminal state: {task.status}"
+                summary = (
+                    "Hermes Kanban task entered non-success terminal state: "
+                    f"{task.status}"
+                )
 
             evidence = ()
             if state is ExecutorState.SUCCEEDED and latest_run is not None:
