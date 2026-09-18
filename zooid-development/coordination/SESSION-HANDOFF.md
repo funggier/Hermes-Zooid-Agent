@@ -8,23 +8,23 @@ Canonical product token: `hermeszooid`
 
 ## Completed
 
-Tasks 009 and 010 are DONE/GREEN.
-Runtime namespace is now `hermeszooid.cnx`; legacy `zooid_cnx` runtime files were retired on `14dae17beb6cb0aaa5f0988fb85224c8191426bd`.
+Tasks 009–011 are DONE/GREEN.
+Desktop identity is now `HermesZooid`, app ID `com.funggier.hermeszooid`, protocol `hermeszooid://`, and runtime home is HermesZooid-owned.
 
 ## Active
 
-Task 011 — Desktop Identity Independence.
+Task 012 — Bootstrap Setup Identity Independence.
 
-Repair OS app identity, protocol, userData/runtime home, bootstrap root/repository, shortcut/uninstall identity, and AUMID before any real-machine install.
+Repair the separate Tauri setup app before gateway/updater/uninstall lifecycle qualification.
 
 ## Resume order
 
 1. AGENTS.md
 2. this file
 3. ACTIVE.md
-4. Task 011
+4. Task 012
 5. STATUS.md
 
 ## Safety
 
-No real-machine install yet. No force push. Existing Hermes and separate Zooid resources must remain untouched.
+No real-machine install yet. Existing Hermes and separate Zooid resources must remain untouched. No force push.

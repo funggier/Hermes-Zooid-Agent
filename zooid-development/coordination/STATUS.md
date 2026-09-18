@@ -6,20 +6,22 @@
 | --- | --- | --- |
 | 001–007 | DONE / GREEN | Execution foundation |
 | 008 | PAUSED / SOURCE_READY | Live provider acceptance deferred |
-| 009 | DONE / GREEN | Distribution/CLI/home isolated from Hermes and Zooid |
+| 009 | DONE / GREEN | Distribution/CLI/home isolated |
 | 010 | DONE / GREEN | Windows CLI installer isolated |
-| 011 | ACTIVE | Desktop OS/runtime identity independence |
+| 011 | DONE / GREEN | Desktop OS/runtime identity isolated |
+| 012 | ACTIVE | Bootstrap setup identity/home/source |
 
 ## Latest evidence
 
-- HEAD before Task 011 docs: `14dae17beb6cb0aaa5f0988fb85224c8191426bd`
-- HermesZooid Windows Installer Identity `35361401981`: SUCCESS
-- HermesZooid Identity `35361402036`: SUCCESS
-- HermesZooid CogentNexus Kernel `35361402094`: SUCCESS
-- Docker `35361401966`: SUCCESS
+- GREEN SHA: `494c21064f8545375a4497e363e8dd356d7ed7e8`
+- Desktop Identity `35362206169`: SUCCESS
+- Identity `35362206203`: SUCCESS
+- CogentNexus `35362206252`: SUCCESS
+- Windows Installer `35362206055`: SUCCESS
+- Docker `35362206442`: SUCCESS
 
 ## Collision status
 
-Package, CLI, runtime home, internal CogentNexus namespace, and Windows CLI installer are isolated.
+Core runtime, installer, and Electron Desktop identity are isolated.
 
-Desktop still owns inherited Hermes app ID/protocol/userData/home/bootstrap identifiers, so real-machine installation remains blocked.
+Tauri setup app and later gateway/updater/uninstall lifecycle resources remain unqualified, so real-machine installation stays blocked.

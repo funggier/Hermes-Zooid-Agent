@@ -1,23 +1,23 @@
 # Active Work
 
 - Project state: ACTIVE
-- Active Task: `011-hermeszooid-desktop-identity-independence`
+- Active Task: `012-hermeszooid-bootstrap-setup-identity`
 - Task state: ACTIVE
 - Repository: `funggier/Hermes-Zooid-Agent`
 - Branch: `agent/zooid-independence`
-- Last GREEN SHA: `14dae17beb6cb0aaa5f0988fb85224c8191426bd`
+- Last GREEN SHA: `494c21064f8545375a4497e363e8dd356d7ed7e8`
 - Canonical product token: `hermeszooid`
 
 ## Active task
 
-[Task 011 — HermesZooid Desktop Identity Independence](../tasks/011-hermeszooid-desktop-identity-independence.md)
+[Task 012 — HermesZooid Bootstrap Setup Identity Independence](../tasks/012-hermeszooid-bootstrap-setup-identity.md)
 
 ## Immediate next action
 
-Write RED Desktop identity contracts for app ID, executable/protocol/shortcut, userData/runtime-home ownership and bootstrap repository/root.
+Write RED contracts for Tauri/Cargo/manifest identity, HermesZooid home resolution, staged setup helper, dev source env and raw installer repository.
 
 ## Real-machine boundary
 
-Do not install yet. Package/home and Windows CLI installer are GREEN; Desktop and later updater/uninstall/coexistence acceptance are not yet GREEN.
+Do not install yet. Desktop identity is GREEN, but bootstrap setup, gateway/service/port and lifecycle fences are not all qualified.
 
-Next unused task ID: 012.
+Next unused task ID: 013.

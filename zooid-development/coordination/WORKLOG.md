@@ -1,16 +1,10 @@
 # Work Log
 
-## 2026-09-18 — Task 009 DONE / GREEN
-HermesZooid distribution/CLI/home identity qualified.
+## 2026-09-18 — Task 011 RED
+`9c20e7e71857298115a1e68284a1b8fca3003b4d`; Desktop Identity workflow `35361896507` failed on inherited package/lock/Electron/bootstrap identity.
 
-## 2026-09-18 — Task 010 DONE / GREEN
-Production repair `08ad934fb2777c1eee411df5ca4e28905e45d82a`.
-Current namespace-clean HEAD `14dae17beb6cb0aaa5f0988fb85224c8191426bd` retains GREEN installer behavior.
-Windows Installer Identity `35361401981` SUCCESS.
+## 2026-09-18 — Task 011 DONE / GREEN
+`494c21064f8545375a4497e363e8dd356d7ed7e8`; Desktop Identity `35362206169` SUCCESS plus Identity/CogentNexus/Windows Installer/Docker regressions SUCCESS.
 
-## 2026-09-18 — Runtime namespace cleanup
-`14dae17beb6cb0aaa5f0988fb85224c8191426bd` retired legacy `zooid_cnx` runtime namespace in favor of `hermeszooid.cnx`.
-Identity, CogentNexus, Windows installer and Docker workflows are GREEN.
-
-## 2026-09-18 — Task 011 ACTIVE
-Opened Desktop OS/runtime identity independence. Real-machine installation remains blocked.
+## 2026-09-18 — Task 012 ACTIVE
+Opened Tauri bootstrap setup identity/home/repository independence. Real-machine install remains blocked.

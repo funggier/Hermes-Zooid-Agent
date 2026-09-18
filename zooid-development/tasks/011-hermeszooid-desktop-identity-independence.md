@@ -1,79 +1,65 @@
 # Task 011 — HermesZooid Desktop Identity Independence
 
 - Task ID: `011-hermeszooid-desktop-identity-independence`
-- State: ACTIVE
+- State: DONE / GREEN
 - Opened: 2026-09-18
+- Completed: 2026-09-18
 - Depends on: Task 010
-- Starting GREEN SHA: `14dae17beb6cb0aaa5f0988fb85224c8191426bd`
+- RED commit: `9c20e7e71857298115a1e68284a1b8fca3003b4d`
+- GREEN commit: `494c21064f8545375a4497e363e8dd356d7ed7e8`
+- Desktop Identity RED workflow: `35361896507` — FAILURE
+- Desktop Identity GREEN workflow: `35362206169` — SUCCESS
 
-## Why this task exists
+## Why this task existed
 
-The Windows CLI installer is now isolated, but the inherited Electron Desktop still identifies itself to the OS as Hermes.
+Package/home and CLI installer ownership were isolated, but Electron still claimed Hermes machine identity: app ID, executable/shortcut, protocol, Desktop userData/home inputs, AUMID, and bootstrap repository/root.
 
-Current collision surfaces include:
-- npm workspace name `hermes`;
-- product/executable/shortcut/uninstall display `Hermes`;
-- app ID `com.nousresearch.hermes`;
-- deep-link scheme `hermes://`;
-- Desktop home resolver reading `HERMES_HOME` and `%LOCALAPPDATA%\hermes`;
-- Desktop userData override `HERMES_DESKTOP_USER_DATA_DIR`;
-- bootstrap root `<HermesHome>/hermes-agent`;
-- bootstrap download source `NousResearch/hermes-agent`;
-- Windows AppUserModelID `com.nousresearch.hermes`.
+## RED
 
-Any one of these can cause side-by-side Desktop installations to share state, handlers, shortcuts, notifications, or update/bootstrap resources.
+Commit `9c20e7e71857298115a1e68284a1b8fca3003b4d` added a focused Desktop identity contract.
 
-## Canonical Desktop identity
+Workflow `35361896507` failed on four expected boundaries:
+- desktop package still named `hermes`;
+- lockfile workspace still named/linking `hermes`;
+- Electron still used Hermes-owned userData/home inputs;
+- bootstrap still downloaded NousResearch/Hermes installer resources.
 
-- npm workspace package: `hermeszooid-desktop`;
-- display/product/executable: `HermesZooid`;
-- app ID / Windows AUMID: `com.funggier.hermeszooid`;
-- protocol: `hermeszooid://`;
-- repository: `funggier/Hermes-Zooid-Agent`;
-- Desktop userData override: `HERMESZOOID_DESKTOP_USER_DATA_DIR`;
-- runtime root input: `HERMESZOOID_HOME`;
-- Windows runtime root default: `%LOCALAPPDATA%\hermeszooid`;
-- POSIX runtime root default: `~/.hermeszooid`;
-- managed app root: `<HERMESZOOID_HOME>/app`.
+The bare-Zooid collision guard already passed.
 
-Bare `zooid` remains reserved for the separate Zooid project.
+## Repair
 
-## Ownership invariant
+Commit `494c21064f8545375a4497e363e8dd356d7ed7e8` changed OS-facing ownership:
 
-HermesZooid Desktop must never select writable state from:
-- `HERMES_HOME`;
-- `HERMES_DESKTOP_USER_DATA_DIR`;
-- `ZOOID_HOME`;
-- `%LOCALAPPDATA%\hermes`;
-- `%LOCALAPPDATA%\zooid`;
-- `~/.hermes` or `~/.zooid`.
+- workspace `hermeszooid-desktop`;
+- product/executable/shortcut/uninstall display `HermesZooid`;
+- app ID/AUMID `com.funggier.hermeszooid`;
+- protocol `hermeszooid://` (`hermeszooid-dev://` in dev);
+- repository `funggier/Hermes-Zooid-Agent`;
+- artifact/DMG/mac bundle identity `HermesZooid`;
+- userData override `HERMESZOOID_DESKTOP_USER_DATA_DIR`;
+- runtime ownership input `HERMESZOOID_HOME` only;
+- Windows default `%LOCALAPPDATA%\hermeszooid`;
+- POSIX default `~/.hermeszooid`;
+- managed app root `<HERMESZOOID_HOME>/app`;
+- bootstrap installer source moved to this repository and the product app root.
 
-Inherited Hermes backend modules may receive a process-local `HERMES_HOME` translated from the already-resolved HermesZooid root, but that variable is never an ownership input.
+Internal inherited code may still receive an alias `HERMES_HOME = HERMESZOOID_HOME`, but Desktop never reads existing `HERMES_HOME` or `ZOOID_HOME` to select writable ownership.
 
-## TDD plan
+## GREEN
 
-RED first. Prove:
-1. package/build identity is HermesZooid and package-lock agrees;
-2. app ID/AUMID is `com.funggier.hermeszooid`;
-3. executable, shortcut, uninstall display and artifacts use `HermesZooid`;
-4. only `hermeszooid` deep-link scheme is registered;
-5. Desktop home resolver uses only HermesZooid inputs/defaults;
-6. Desktop userData override is HermesZooid-owned;
-7. managed app root is `<home>/app`, not `hermes-agent`;
-8. bootstrap installer source is this repository, not NousResearch upstream;
-9. bootstrap subprocess passes `HERMESZOOID_HOME`, not an ownership-level `HERMES_HOME`;
-10. existing Hermes and bare Zooid Desktop identifiers remain untouched.
+On `494c21064f8545375a4497e363e8dd356d7ed7e8`:
+- HermesZooid Desktop Identity `35362206169` — SUCCESS;
+- HermesZooid Identity `35362206203` — SUCCESS;
+- HermesZooid CogentNexus Kernel `35362206252` — SUCCESS;
+- HermesZooid Windows Installer Identity `35362206055` — SUCCESS;
+- Docker `35362206442` — SUCCESS.
 
-## Non-goals
+## Result
 
-- full updater ownership;
-- uninstall/reset end-to-end qualification;
-- scheduled gateway/task naming outside Desktop;
-- live-machine installation;
-- Task 008 provider acceptance.
+PASS.
 
-These are later numbered tasks.
+Desktop package/build/deep-link/userData/runtime-root identity no longer claims Hermes or bare Zooid resources.
 
-## Immediate next action
+## Follow-up
 
-Add a dedicated Desktop identity RED contract, then minimally repair package metadata and Desktop machine/runtime ownership until GREEN.
+Task 012 isolates the separate Tauri bootstrap/setup application before lifecycle/update/service qualification.
